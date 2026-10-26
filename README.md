@@ -10,7 +10,7 @@ Um aplicativo Windows para acompanhar a biblioteca Steam, guiar conquistas rumo 
 
 - Biblioteca demonstrativa com pesquisa, filtros, ordenação e progresso.
 - Biblioteca visual em grafite/preto, banner ilustrativo de recentes, capas originais e favoritos em memória (independentes da lista de desejos).
-- Página de conquistas por jogo fictício.
+- Página individual demonstrativa com banner/capa originais, resumo, conquistas obtidas/pendentes, navegação por seções e exportação PNG/JPEG. Dados desconhecidos permanecem distintos de zero.
 - Comparação demonstrativa de preços (valores inventados, claramente identificados).
 - Lista de desejos local (em memória, reinicia ao recarregar).
 - Exportação **real** de imagem PNG ou JPEG para um jogo demonstrativo via Canvas.
@@ -28,7 +28,7 @@ Um aplicativo Windows para acompanhar a biblioteca Steam, guiar conquistas rumo 
 
 Não há formulário de senha, Steam Guard ou API key.
 
-A [Fase 1 do redesenho visual](docs/VISUAL_DESIGN.md) abrange navegação e biblioteca, usando as capturas Library Home/Library Gamepage do SpaceTheme como referência. Os jogos recentes têm ordem ilustrativa, sem histórico Steam; dois favoritos de exemplo são restaurados ao reiniciar. A página individual do jogo permanece para a Fase 2. Não é necessário instalar Millennium.
+A [Fase 1 do redesenho visual](docs/VISUAL_DESIGN.md) abrange navegação e biblioteca, usando as capturas Library Home/Library Gamepage do SpaceTheme como referência. Os jogos recentes têm ordem ilustrativa, sem histórico Steam; dois favoritos de exemplo são restaurados ao reiniciar. A [Fase 2](docs/GAME_DETAIL_DESIGN.md) aplica a mesma identidade à página individual. Guias e recomendações continuam indisponíveis; não é necessário instalar Millennium.
 
 ## Rodar no Windows pelo VS Code
 
@@ -113,6 +113,8 @@ O ESLint verifica JavaScript/TypeScript, regras de Hooks e React Refresh; avisos
 - Backend: rotas públicas/bloqueadas, falhas sanitizadas e migrações em D1 temporário, com validação, integridade e primitivas SQL de expiração, revogação e uso único.
 
 `npm.cmd run test:browser` executa a regressão Playwright em navegador real: limpar busca e filtro por mouse, Tab/Enter e Tab/Espaço, em sete tamanhos de janela entre 320 e 1440 px. Esse teste também faz parte de `check`. No Windows, usa o Microsoft Edge instalado, em perfil temporário/headless, sem acessar perfil ou conta pessoal. Se Edge estiver ausente, instale-o pelo site oficial da Microsoft; o teste não instala navegadores automaticamente. No Linux, prepare uma vez o Chromium com `npx playwright install --with-deps chromium` (download gratuito; dependências do sistema podem exigir privilégios). A CI executa essa preparação somente no Linux.
+
+Os testes de navegador também cobrem as páginas individuais de todos os jogos demo, retorno à biblioteca preservando busca/filtro, âncoras por mouse/teclado, layouts de 320 a 1920 px, redimensionamento e arquivos PNG/JPEG efetivamente baixados com 1200×630. Os estados sem dados/privados/incompletos e as falhas de exportação têm testes de componente com dados locais; não representam consultas Steam reais.
 
 O runner inicia e encerra seu próprio Vite em `http://127.0.0.1:4173`, separado da porta 5173 do desenvolvimento. Mantenha 4173 livre. As interações usam somente o demo local. Resultados e diagnósticos ficam ignorados pelo Git em `test-results/` e `playwright-report/`. A análise da falha de clique do navegador integrado está em [VISUAL_DESIGN](docs/VISUAL_DESIGN.md#investigação-do-clique-em-limpar-busca-e-filtros).
 

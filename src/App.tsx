@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, BookOpen, CheckCircle2, ChevronRight, Download,
+  ArrowRight, ChevronRight,
   Gamepad2, Heart, LibraryBig, LockKeyhole, Settings2,
   ShieldCheck, ShoppingBag, Star, Tag,
 } from 'lucide-react';
@@ -8,16 +8,16 @@ import { DemoLibraryProvider, demoDeals } from './demo';
 import { exportGameCard } from './exportImage';
 import type { Game, LibraryProvider } from './types';
 import { failure, type LibraryResult } from './library/contracts';
-import { achievementPercent as percent, progressLabel } from './library/progress';
+import { achievementPercent as percent } from './library/progress';
 import { LibraryHome } from './library/LibraryHome';
 import { LibraryArtwork } from './library/LibraryArtwork';
 import { demoFavoriteAppIds } from './library/demoPresentation';
+import { GameDetail } from './game/GameDetail';
 
 type Page = 'library' | 'deals' | 'wishlist' | 'profile';
 type GameView = 'all' | 'pending' | 'done';
 
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-const hours = (minutes: number | null) => minutes === null ? 'Tempo indisponível' : `${(minutes / 60).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} h`;
 const defaultProvider = new DemoLibraryProvider();
 const emptyGames: Game[] = [];
 const navItems: { id: Page; title: string; icon: typeof LibraryBig }[] = [
@@ -26,13 +26,6 @@ const navItems: { id: Page; title: string; icon: typeof LibraryBig }[] = [
   { id: 'wishlist', title: 'Lista de desejos', icon: Heart },
   { id: 'profile', title: 'Meu perfil', icon: Settings2 },
 ];
-
-function GameCover({ game, mini = false }: { game: Game; mini?: boolean }) {
-  return <div className={`game-cover ${mini ? 'mini' : ''}`} style={{ background: `linear-gradient(145deg, ${game.accent}, #151929 83%)` }} aria-hidden="true">
-    <span className="cover-glyph">{game.coverMark}</span>
-    <span className="cover-name">{game.title}</span>
-  </div>;
-}
 
 function App({ libraryProvider = defaultProvider }: { libraryProvider?: LibraryProvider }) {
   const [request, setRequest] = useState<{ provider: LibraryProvider; result: LibraryResult } | null>(null);
@@ -109,14 +102,11 @@ function App({ libraryProvider = defaultProvider }: { libraryProvider?: LibraryP
 
     <main className="main" id="main-content" ref={mainRef} tabIndex={-1}>
       <header className="topbar"><div className="breadcrumb"><span className="topbar-section">BIBLIOTECA</span><ChevronRight size={13} aria-hidden="true" /><strong>{title}</strong></div><div className="right-tags"><span className="pill-demo"><span aria-hidden="true" />PROTÓTIPO · SEM LOGIN</span><button className="icon-button" aria-label="Abrir perfil" title="Perfil — nenhuma conta conectada" onClick={() => goTo('profile')}><Settings2 size={16} aria-hidden="true" /></button></div></header>
-      <div className={`content ${page === 'library' && !selected ? 'library-content' : ''}`}>
-        {selected && library?.ok && page === 'library' ? <>
-          <button className="back" onClick={() => goTo('library')}><ArrowLeft size={16}/> Voltar para a biblioteca</button>
-          <div className="game-detail-header"><GameCover game={selected} mini /><div className="detail-text"><div className="eyebrow">{isDemo ? 'JOGO · DADOS DE EXEMPLO' : 'JOGO · STEAM'}</div><h1>{selected.title}</h1><p>{hours(selected.totalMinutes)} · {progressLabel(selected)}</p><div className="progress-track"><div style={{ width: `${percent(selected) ?? 0}%` }} /></div><div className="export-bar"><span>Exportar cartão:</span><select aria-label="Formato da exportação" value={format} onChange={e => setFormat(e.target.value as 'png' | 'jpeg')}><option value="png">PNG</option><option value="jpeg">JPEG</option></select><button className="primary small" disabled={percent(selected) === null && selected.achievementsStatus !== 'none'} onClick={() => exportGameCard(selected, format)}><Download size={16} /> Exportar</button></div></div></div>
-          <div className="section-title"><div><h2>Conquistas</h2><p>As conquistadas e as que faltam para chegar ao 100%</p></div><span className="subtle-badge">{percent(selected) === null ? progressLabel(selected) : `${selected.achievements.filter(a => a.achieved).length} de ${selected.achievements.length}`}</span></div>
-          <div className="achievements">{selected.achievements.map(a => <div key={a.id} className="achievement"><div className={`achievement-symbol ${a.achieved ? 'earned' : ''}`}>{a.achieved ? <CheckCircle2 size={23}/> : <LockKeyhole size={23}/>}</div><div className="achievement-copy"><strong>{a.name}</strong><p>{a.description}</p><span className="micro">Dificuldade: {a.estimatedDifficulty} · Guia: {a.guideStatus === 'indisponível' ? 'indisponível' : 'ainda não verificado'}</span></div><span className={`ach-state ${a.achieved ? 'done' : ''}`}>{a.achieved === null ? 'Indisponível' : a.achieved ? 'Concluída' : 'Pendente'}</span></div>)}</div>
-          <section className="notice"><BookOpen size={20} /><div><strong>Guias confiáveis serão integrados em uma etapa posterior.</strong><p>{isDemo ? 'Nesta demonstração não há guias nem classificações reais. Não vamos inventar dificuldades ou links não verificados.' : 'Ainda não há guias integrados. Dificuldades permanecem desconhecidas sem uma fonte verificada.'}</p></div></section>
-        </> : page === 'library' && !library?.ok ? <section className="notice" role={library ? 'alert' : 'status'}><p>{library ? library.error.message : 'Carregando biblioteca...'}</p></section> : page === 'library' ? <LibraryHome
+      <div className={`content ${page === 'library' ? selected ? 'game-detail-content' : 'library-content' : ''}`}>
+        {selected && library?.ok && page === 'library' ? <GameDetail key={selected.appid}
+          game={selected} demo={isDemo} onBack={() => goTo('library')}
+          format={format} onFormat={setFormat} onExport={() => exportGameCard(selected, format)}
+        /> : page === 'library' && !library?.ok ? <section className="notice" role={library ? 'alert' : 'status'}><p>{library ? library.error.message : 'Carregando biblioteca...'}</p></section> : page === 'library' ? <LibraryHome
           games={games} filtered={filtered} demo={isDemo} incomplete={library?.ok ? library.data.incomplete : false}
           search={search} onSearch={setSearch} view={view} onView={setView} sort={sort} onSort={setSort}
           favoriteIds={favoriteIds} onFavorite={toggleFavorite} onOpen={openGame}

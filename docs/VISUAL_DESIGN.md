@@ -1,5 +1,7 @@
 # Redesenho visual — Fase 1
 
+Continuidade: a página individual já recebeu a [Fase 2](GAME_DETAIL_DESIGN.md), com a identidade aprovada aqui. O registro abaixo descreve a implementação e as verificações históricas da Fase 1.
+
 Escopo: biblioteca principal e navegação do Steam Companion. O protótipo continua gratuito, local e demonstrativo. A página individual do jogo não foi redesenhada; capa, conquistas e exportação dessa página permanecem com a apresentação anterior. O ajuste do botão Voltar serve somente à navegação/foco por teclado.
 
 ## Referência e recursos
