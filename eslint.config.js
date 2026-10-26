@@ -6,7 +6,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['dist/**', 'coverage/**', 'node_modules/**', '.wrangler/**', 'src-tauri/target/**']),
+  globalIgnores(['**/dist/**', 'coverage/**', 'node_modules/**', '**/.wrangler/**', 'src-tauri/target/**']),
   {
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],
     extends: [js.configs.recommended],

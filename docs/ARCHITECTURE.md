@@ -3,11 +3,13 @@
 ## Stack
 - Frontend: React + TypeScript (protótipo executável em Vite).
 - Desktop: Tauri 2 (adicionar após protótipo e pré-requisitos Windows).
-- Backend futuro: Cloudflare Workers + Hono, HTTPS obrigatório.
-- Persistência futura: D1 (SQL); armazenamento local somente de cache e preferências não sensíveis.
+- Backend local implementado: Cloudflare Workers + Hono. Produção futura exige HTTPS e autenticação revisada; não há deploy.
+- Persistência local: D1 emulado pelo Wrangler com migrações versionadas. D1 remoto e sincronização ainda não existem; o frontend não acessa o banco.
 - Integrações: Steam APIs documentadas, provedores de preço validados, catálogos de guias com fontes.
 
 ## Fluxo de dados
+
+Fluxo alvo futuro; as conexões externas, Tauri e autenticação abaixo ainda não estão ativas:
 
 ```text
 [Aplicativo Tauri + React]
@@ -27,7 +29,9 @@
 
 ## Preparação da integração Steam
 
-Os contratos, normalizadores e `SteamLibraryProvider` estão implementados sem dependência de React. O transporte `SteamWebApi.server.ts` fica exclusivamente no backend, sem rota ou segredo configurado. A biblioteca é consultada separadamente das conquistas por jogo para evitar consultas em massa. Tempos e progresso desconhecidos não são convertidos em zero. Veja [STEAM_LIBRARY.md](STEAM_LIBRARY.md) para endpoints oficiais, limites, testes e trabalho ainda necessário antes de uma conta real.
+Os contratos, normalizadores e `SteamLibraryProvider` estão implementados sem dependência de React. O transporte `SteamWebApi.server.ts` fica exclusivamente no backend, sem rota Steam ou segredo configurado. A biblioteca é consultada separadamente das conquistas por jogo para evitar consultas em massa. Tempos e progresso desconhecidos não são convertidos em zero. Veja [STEAM_LIBRARY.md](STEAM_LIBRARY.md) para endpoints oficiais, limites, testes e trabalho ainda necessário antes de uma conta real.
+
+O Worker atual só disponibiliza `/health`; reservas `/auth/*` e `/api/*` negam acesso incondicionalmente. Há migrações e testes no D1 emulado, sem produção ou autenticação fake. Configuração, comandos Windows e CI estão em [BACKEND.md](BACKEND.md); OpenID, retorno desktop, sessões, logout, CSRF e bloqueadores estão em [AUTHENTICATION.md](AUTHENTICATION.md).
 
 ## Regras
 - O frontend nunca comunica diretamente uma chave secreta a fornecedor externo.
@@ -37,15 +41,16 @@ Os contratos, normalizadores e `SteamLibraryProvider` estão implementados sem d
 - Endpoints de administração não ficam públicos.
 - Inicialmente somente leitura das contas Steam.
 
-## Modelo preliminar de banco
-- `users`: steam_id, joined_at, last_seen_at, profile_visibility.
+## Modelo local de banco e preparação futura
+- `users`: steam_id, created_at, last_seen_at, profile_visibility.
 - `user_settings`: preferências por usuário.
-- `wishlist`: steam_id + appid, timestamp.
-- `user_goals`: steam_id + appid + status.
-- `sessions`: sessão revogável, identificador hash, expiração (ou armazenamento compatível com Worker).
-- `saved_guides`: links adicionados manualmente (verificação e segurança de URLs).
+- `user_wishlist`: steam_id + app_id, timestamp.
+- `user_goals`: steam_id + app_id + state.
+- `sessions`: estrutura preparatória de hash, usuário, expiração, revogação e vínculo CSRF; sem emissão/validação HTTP nesta etapa.
+- `auth_attempts`, `openid_nonces`, `desktop_grants`: estrutura preparatória para tentativa, antirreplay e retorno desktop.
+- `saved_guides`: proposta futura, ainda não há tabela ou funcionalidade.
 
-Veja `backend/migrations/0001_initial.sql` (rascunho sujeito a revisão de segurança).
+Veja as [migrações](../backend/migrations/) e sua revisão em [BACKEND.md](BACKEND.md). A migração original foi preservada; as seguintes validam os dados e acrescentam as estruturas. Isso não torna a aplicação pronta para contas reais.
 
 ## Primeira prova de viabilidade antes de login real
 1. Validar callback OpenID com `workers.dev` e domínio/realm.

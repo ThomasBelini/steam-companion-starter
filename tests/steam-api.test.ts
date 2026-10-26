@@ -21,7 +21,8 @@ describe('transporte Steam exclusivo do servidor', () => {
     expect(JSON.parse(url.searchParams.get('input_json')!)).toEqual({ steamid: steamId, include_appinfo: true, include_played_free_games: true });
     expect(url.toString()).not.toContain(testKey);
     expect(url.searchParams.has('key')).toBe(false);
-    expect(init).toMatchObject({ method: 'GET', headers: { 'x-webapi-key': testKey }, redirect: 'error', credentials: 'omit', cache: 'no-store' });
+    expect(init).toMatchObject({ method: 'GET', headers: { 'x-webapi-key': testKey }, redirect: 'error', cache: 'no-store' });
+    expect(new Headers(init?.headers).has('cookie')).toBe(false);
   });
 
   it('usa GetPlayerAchievements v1 e GetSchemaForGame v2 com AppID e idioma', async () => {

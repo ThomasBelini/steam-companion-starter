@@ -1,6 +1,6 @@
 # Plano de desenvolvimento proposto
 
-Revisão: 26/10/2026. Aguarda revisão do responsável pelo projeto; as funcionalidades abaixo não foram iniciadas. Evidências e limitações da análise: [AUDIT](AUDIT.md).
+Revisão: 26/10/2026. Este plano mantém os critérios para etapas futuras. Já foram preparadas a base de publicação/CI, os contratos e provedores Steam e a estrutura **local** Worker/Hono/D1 com autenticação desativada. O demo continua ativo; não há login, consulta Steam ou banco online. Evidências históricas: [AUDIT](AUDIT.md). Estado local e bloqueadores atuais: [BACKEND](BACKEND.md), [STEAM_LIBRARY](STEAM_LIBRARY.md) e [AUTHENTICATION](AUTHENTICATION.md).
 
 ## Princípios e arquitetura candidata
 
@@ -38,7 +38,9 @@ Começar com documentação e respostas simuladas, sem pedir credenciais. Uma pr
 
 ## Etapa 3 — autenticação e banco seguros: antes do beta conectado
 
-**Entregas futuras:** Worker/D1 de desenvolvimento, migrações versionadas e sessões. Verificar OpenID no servidor com endpoint oficial fixo, assinatura/campos assinados, identidade, retorno, realm, nonce e antirreplay. Definir expiração, logout e revogação.
+**Preparado localmente:** Worker/Hono, health, D1 emulado, migrações versionadas e estruturas SQL de autenticação com rotas bloqueadas. As políticas de sessão estão documentadas; não há sessão aceita pelo HTTP.
+
+**Entregas futuras:** verificar OpenID no servidor com endpoint oficial fixo, assinatura/campos assinados, identidade, retorno, realm, nonce e antirreplay. Implementar e comprovar sessões, expiração, logout e revogação somente após os bloqueadores de [AUTHENTICATION](AUTHENTICATION.md).
 
 No desktop, iniciar tentativa com estado e segredo local; retornar somente código curto, de uso único, pelo mecanismo escolhido na prova. Vincular resgate à prova de posse da tentativa e consumir código/nonce atomicamente. Não tratar OpenID como OAuth/PKCE nem colocar tokens de sessão na URL.
 
@@ -86,9 +88,9 @@ Sequência principal: **0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8**. A p
 | --- | --- | --- |
 | Desktop | Tauri 2 + React existente | Validar WebView2, permissões, login e gravação. |
 | Backend/banco | Worker + Hono + D1 | Cotas suficientes, domínio gratuito elegível e nenhum upgrade automático. |
-| Licença | Avaliar MIT | Escolha do responsável e revisão de atribuições antes da publicação. |
+| Licença | MIT escolhida para o código original | Preservar licença e avisos de terceiros; revisar novas dependências. |
 | Steam | OpenID verificado + API no backend | Sem credenciais dos usuários; acesso e privacidade documentados. |
 | Preços | Adaptadores independentes | Fonte permitida/gratuita por loja; cobertura completa ainda não comprovada. |
 | Operação | Cache, limites e suspensão na cota | Sem promessa de escala ilimitada, SLA ou disponibilidade eterna. |
 
-Próximo trabalho recomendado após aprovação: **etapa 1**, junto à conclusão dos testes manuais do protótipo. Nenhuma conta, deploy ou serviço pago foi criado nesta análise.
+Próximo trabalho depende de nova aprovação de escopo e da comprovação dos bloqueadores para autenticação; a base local não conclui a etapa 3. Continuam pendentes as provas manuais do protótipo e a viabilidade das integrações externas. Nenhuma conta, deploy ou serviço pago foi criado nesta preparação.

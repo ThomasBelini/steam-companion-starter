@@ -29,6 +29,8 @@
     "vite.config.ts",
     "vitest.config.ts",
     "tests",
-    "backend/steam"
+    "backend/steam",
+    "backend/tests",
+    "vitest.backend.config.ts"
   ]
 }

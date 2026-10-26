@@ -47,7 +47,7 @@ export class SteamWebApi implements SteamApi {
       url.search = new URLSearchParams({ format: 'json', ...params }).toString();
       const response = await (this.#options.fetcher ?? fetch)(url, {
         method: 'GET', headers: { 'x-webapi-key': this.#options.apiKey },
-        credentials: 'omit', redirect: 'error', cache: 'no-store',
+        redirect: 'error', cache: 'no-store',
         signal: signal ? AbortSignal.any([signal, controller.signal]) : controller.signal,
       });
       if (signal?.aborted || controller.signal.aborted) return failure(signal?.aborted ? 'cancelled' : 'timeout');

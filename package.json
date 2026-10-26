@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "license": "MIT",
+  "overrides": {
+    "miniflare": { "undici": "7.30.1" }
+  },
   "type": "module",
   "engines": {
     "node": ">=24.15.0 <25"
@@ -11,18 +14,25 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b && npm run typecheck:backend",
+    "typecheck:backend": "tsc -p backend/tsconfig.json --noEmit",
     "lint": "eslint . --max-warnings=0",
-    "test": "vitest run",
+    "test": "vitest run && npm run test:backend",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run lint && npm test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run backend:db:migrate && npm test && npm run build && npm run backend:build",
+    "backend:dev": "wrangler dev --local --config backend/wrangler.jsonc --persist-to .wrangler/state",
+    "backend:db:migrate": "wrangler d1 migrations apply DB --local --config backend/wrangler.jsonc --persist-to .wrangler/state",
+    "backend:build": "wrangler deploy --dry-run --config backend/wrangler.jsonc --outdir dist/backend",
+    "test:backend": "vitest run --config vitest.backend.config.ts"
   },
   "dependencies": {
+    "hono": "^4.13.14",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261026.1",
     "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -40,6 +50,7 @@
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.72.0",
     "vite": "^6.1.0",
-    "vitest": "^4.1.12"
+    "vitest": "^4.1.12",
+    "wrangler": "^4.152.0"
   }
 }

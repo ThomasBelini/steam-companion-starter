@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": ["@cloudflare/workers-types"],
+    "tsBuildInfoFile": "../.wrangler/backend.tsbuildinfo"
+  },
+  "include": ["src", "steam"],
+  "exclude": ["../node_modules", "../dist"]
+}

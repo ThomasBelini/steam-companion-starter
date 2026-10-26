@@ -1,6 +1,6 @@
 # Preparação da biblioteca Steam
 
-Esta etapa prepara contratos, normalização e um cliente exclusivo do servidor. **Não há login, servidor HTTP, chave configurada, consulta de conta real ou deploy.** A aplicação continua iniciando no modo demo.
+Esta etapa preparou contratos, normalização e um cliente exclusivo do servidor. Há agora um backend HTTP **somente local** com `/health`, descrito em [BACKEND.md](BACKEND.md), mas não há login, rota de consulta Steam, chave configurada, conta real consultada ou deploy. A aplicação continua iniciando no modo demo.
 
 ## Documentação oficial consultada
 
@@ -84,4 +84,4 @@ Os testes abrangem transporte simulado, versões e parâmetros, confidencialidad
 4. Adicionar cache por SteamID/AppID/idioma com TTL apropriado, limites globais e por usuário, orçamento diário e controle de concorrência. O cliente atual não implementa cache nem contador diário persistente; não está pronto para tráfego público.
 5. Implementar o adaptador frontend da API própria e a ligação do detalhe do jogo com o carregamento sob demanda de conquistas; validar respostas reais com uma conta de teste autorizada, sem copiar credenciais ou payloads privados ao repositório.
 
-Esta preparação não ativa consultas reais, login, rotas públicas ou banco online. A publicação no GitHub permanece manual e separada das verificações e dos commits locais.
+Esta preparação não ativa consultas reais, login, rotas de dados privados ou banco online. A publicação no GitHub permanece manual e separada das verificações e dos commits locais. O plano de autenticação e os bloqueadores atuais estão em [AUTHENTICATION.md](AUTHENTICATION.md).

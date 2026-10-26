@@ -1,11 +1,11 @@
 # Segurança — requisitos antes de convidar amigos
 
-**ALERTA:** o protótipo atual não contém login nem backend, portanto não deve ser representado como serviço autenticado.
+**ALERTA:** existe backend local com Hono/Workers e D1 emulado, mas o protótipo não contém login ou autenticação operacional. As rotas de auth/dados privados permanecem bloqueadas; não deve ser representado como serviço autenticado. A especificação futura está em [AUTHENTICATION.md](AUTHENTICATION.md) e a execução local em [BACKEND.md](BACKEND.md).
 
 ## Login
 - Usar Steam OpenID 2.0 no navegador externo, com página realmente hospedada pela Steam.
 - Verificar a resposta OpenID no servidor (Steam `check_authentication`, origem, domínio de retorno, nonce, anti-replay e SteamID64 validado).
-- Para desktop, estudar fluxo seguro via deep link + código aleatório de uso único + verificação de estado/PKCE quando aplicável; não passar bearer token de longa duração em URL.
+- Para desktop, estudar deep link com código aleatório de uso único, vínculo ao navegador/tentativa e prova de posse de segredo nativo; não passar bearer token em URL. OpenID 2.0 não fornece PKCE: o mecanismo do aplicativo exige revisão própria, conforme [AUTHENTICATION](AUTHENTICATION.md).
 - Expirar códigos rapidamente e aceitar um único resgate. Vincular resgate à tentativa iniciada no próprio desktop.
 - Criar sessão própria com identificador aleatório seguro, curta duração, revogável; guardar somente hash no banco e segredo em armazenamento seguro do SO.
 - Nunca pedir senhas/códigos Steam Guard/cookies ou API Key de usuários.

@@ -13,6 +13,7 @@ coverage/
 .wrangler/
 .dev.vars
 .dev.vars.*
+!.dev.vars.example
 .target/
 target/
 src-tauri/target/

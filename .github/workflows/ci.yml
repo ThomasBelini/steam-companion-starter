@@ -38,7 +38,11 @@ jobs:
         run: npm run typecheck
       - name: Executar ESLint
         run: npm run lint
+      - name: Aplicar migrações D1 somente locais
+        run: npm run backend:db:migrate
       - name: Executar testes
         run: npm test
       - name: Compilar interface
         run: npm run build
+      - name: Compilar Worker sem deploy
+        run: npm run backend:build

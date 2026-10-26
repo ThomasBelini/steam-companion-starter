@@ -1,0 +1,4 @@
+# Exemplo público: não configure valores reais nesta etapa.
+# Segredos futuros existem somente no ambiente seguro do backend, nunca em VITE_*.
+# O backend local e os testes não precisam de nenhum segredo.
+STEAM_API_KEY=

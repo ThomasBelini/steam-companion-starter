@@ -17,6 +17,8 @@ describe('arquivos permitidos na publicação', () => {
     'tsconfig.tsbuildinfo', '.wrangler/state/cache', 'src-tauri/target/debug/app.exe',
     'notes.tmp', 'notes.temp', 'README.md.bak', '.App.tsx.swp', '.App.tsx.swo',
     'notes~', 'Thumbs.db', 'Desktop.ini',
+    'backend/.dev.vars', 'backend/.dev.vars.local', 'backend/dist/index.js',
+    'backend/.wrangler/state/local.sqlite',
   ])('exclui %s', path => {
     expect(rules.ignores(path)).toBe(true);
   });
@@ -26,6 +28,7 @@ describe('arquivos permitidos na publicação', () => {
     'package.json', 'package-lock.json', 'eslint.config.js', 'vitest.config.ts',
     'src/App.tsx', 'src/exportImage.ts', 'tests/App.test.tsx',
     'backend/migrations/0001_initial.sql', 'docs/SECURITY.md', 'README.md',
+    'backend/.dev.vars.example', 'backend/wrangler.jsonc', 'vitest.backend.config.ts',
   ])('preserva %s', path => {
     expect(rules.ignores(path)).toBe(false);
   });
@@ -34,5 +37,25 @@ describe('arquivos permitidos na publicação', () => {
     const example = readFileSync(`${root}/.env.example`, 'utf8');
     const assignments = example.split(/\r?\n/).filter(line => line.trim() && !line.trim().startsWith('#'));
     expect(assignments).toEqual(['VITE_API_BASE_URL=']);
+  });
+
+  it('mantém o exemplo de segredo exclusivamente no backend e vazio', () => {
+    const example = readFileSync(`${root}/backend/.dev.vars.example`, 'utf8');
+    const assignments = example.split(/\r?\n/).filter(line => line.trim() && !line.trim().startsWith('#'));
+    expect(assignments).toEqual(['STEAM_API_KEY=']);
+  });
+
+  it('mantém configuração Worker local sem conta, rotas ou segredos públicos', () => {
+    const config = JSON.parse(readFileSync(`${root}/backend/wrangler.jsonc`, 'utf8'));
+    expect(config.account_id).toBeUndefined();
+    expect(config.routes).toBeUndefined();
+    expect(config.vars).toBeUndefined();
+    expect(config.workers_dev).toBe(false);
+    expect(config.preview_urls).toBe(false);
+    expect(config.send_metrics).toBe(false);
+    expect(config.dev.ip).toBe('127.0.0.1');
+    expect(config.d1_databases).toEqual([expect.objectContaining({
+      binding: 'DB', remote: false, database_id: '00000000-0000-0000-0000-000000000001',
+    })]);
   });
 });

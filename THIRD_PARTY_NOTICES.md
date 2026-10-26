@@ -1,12 +1,12 @@
 # Avisos de terceiros e revisão de licenças
 
-Revisão para o primeiro commit público, em 2026. Fonte: versões e metadados do [package-lock.json](package-lock.json), licenças instaladas pelo npm e referências indicadas abaixo. Nenhum pacote foi atualizado nesta revisão.
+Revisão atualizada para a preparação do backend local, em 2026. Fonte: versões e metadados do [package-lock.json](package-lock.json), licenças instaladas pelo npm e referências indicadas abaixo. Foram acrescentados Hono, Wrangler e os tipos Workers; uma dependência transitiva Undici foi fixada em versão corrigida.
 
 ## Escopo e conclusão
 
 A [licença MIT do projeto](LICENSE) cobre o código original do Steam Companion. Ela não substitui licenças, direitos autorais ou marcas dos fornecedores. Não foi identificado impedimento para aplicar MIT ao código original com as dependências atuais, preservando as obrigações de terceiros.
 
-As dependências de execução usam MIT e ISC. Ferramentas e dados de desenvolvimento usam também Apache-2.0, BSD, BlueOak-1.0.0, MIT-0, CC-BY-4.0 e CC0-1.0. As entradas do lockfile foram verificadas: todas declaram licença. As ferramentas não são incorporadas como aplicações ao bundle React; não se deve relicenciar seus arquivos ou bancos de dados como MIT.
+As dependências de execução usam MIT e ISC. Ferramentas e dados de desenvolvimento usam também Apache-2.0, BSD/0BSD, BlueOak-1.0.0, MIT-0, CC-BY-4.0, CC0-1.0 e componentes LGPL-3.0-or-later do processamento de imagens local. As entradas do lockfile foram verificadas: todas declaram licença. Hono integra somente o bundle do Worker. As ferramentas não são incorporadas como aplicações ao bundle React/Worker; não se deve relicenciar seus arquivos ou bancos de dados como MIT.
 
 Não há capas, fontes remotas, guias copiados ou dados Steam/lojas no protótipo. As formas das capas são desenhadas localmente e os jogos são fictícios. Os ícones Lucide são conteúdo de terceiros e estão atribuídos abaixo.
 
@@ -20,11 +20,13 @@ Ao redistribuir o código ou os arquivos web compilados, inclua este arquivo e L
 | react-dom | 19.3.1 | MIT |
 | scheduler | 0.28.0 | MIT |
 | lucide-react | 0.468.0 | ISC |
+| hono | 4.13.14 | MIT |
 
 ## Ferramentas diretas de desenvolvimento
 
 | Pacote | Versão | Licença declarada |
 | --- | --- | --- |
+| @cloudflare/workers-types | 5.20261026.1 | MIT OR Apache-2.0 |
 | @eslint/js | 10.0.1 | MIT |
 | @testing-library/jest-dom | 7.0.1 | MIT |
 | @testing-library/react | 16.3.3 | MIT |
@@ -43,6 +45,7 @@ Ao redistribuir o código ou os arquivos web compilados, inclua este arquivo e L
 | typescript-eslint | 8.72.0 | MIT |
 | vite | 6.4.5 | MIT |
 | vitest | 4.1.12 | MIT |
+| wrangler | 4.152.0 | MIT OR Apache-2.0 |
 
 ## Inventário transitivo do lockfile
 
@@ -50,21 +53,28 @@ Os números contam entradas, incluindo variantes opcionais de plataforma e vers�
 
 | Licença declarada | Entradas |
 | --- | --- |
-| Apache-2.0 | 17 |
+| 0BSD | 1 |
+| Apache-2.0 | 37 |
+| Apache-2.0 AND LGPL-3.0-or-later | 3 |
+| Apache-2.0 AND LGPL-3.0-or-later AND MIT | 1 |
 | BlueOak-1.0.0 | 4 |
 | BSD-2-Clause | 8 |
 | BSD-3-Clause | 3 |
 | CC-BY-4.0 | 1 |
-| CC0-1.0 | 1 |
-| ISC | 13 |
-| MIT | 252 |
+| CC0-1.0 | 2 |
+| ISC | 14 |
+| LGPL-3.0-or-later | 10 |
+| MIT | 300 |
 | MIT-0 | 2 |
+| MIT OR Apache-2.0 | 4 |
 
 - **Apache-2.0:** por exemplo TypeScript e componentes ESLint. Mantenha licença, avisos e NOTICE quando existirem ao redistribuir esses componentes. [Texto Apache](https://www.apache.org/licenses/LICENSE-2.0).
 - **BlueOak-1.0.0:** minimatch e versões aninhadas de lru-cache, usados no desenvolvimento. Ao redistribuí-los, preserve o texto ou o [link exigido pela licença Blue Oak](https://blueoakcouncil.org/license/1.0.0).
 - **CC-BY-4.0:** dados de caniuse-lite, versão 1.0.30001819, usados pelas ferramentas de compatibilidade. Fonte: [caniuse-lite](https://github.com/browserslist/caniuse-lite), com dados de [Can I use](https://caniuse.com/), sob [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Não foram modificados nesta revisão; atribuição e indicação de alterações são necessárias ao redistribuir/adaptar esses dados.
 - **CC0-1.0:** mdn-data, usado no desenvolvimento, mantém sua [dedicação CC0](https://creativecommons.org/publicdomain/zero/1.0/).
 - **MIT, MIT-0, ISC e BSD:** preserve os avisos exigidos pelo texto de cada pacote ao redistribuí-lo. MIT-0 não exige atribuição. As licenças permanecem disponíveis nos pacotes instalados.
+- **MIT OR Apache-2.0:** ferramentas Cloudflare e tipos Workers oferecem alternativa de licença. Preserve os textos/avisos do componente caso suas ferramentas sejam redistribuídas. Fontes: [workers-sdk](https://github.com/cloudflare/workers-sdk) e [workerd](https://github.com/cloudflare/workerd).
+- **LGPL-3.0-or-later e expressões AND:** Wrangler/Miniflare incluem Sharp e binários opcionais de libvips para emulação local. Os dez pacotes `@img/sharp-libvips-*` usam LGPL; as quatro variantes Sharp Windows/Wasm combinam licenças. Não integram o código ou bundle do aplicativo nesta etapa. Não redistribuímos esses binários: `npm ci` os obtém dos fornecedores. Antes de empacotar ferramentas ou `node_modules`, revisar e cumprir as obrigações específicas de LGPL/GPL incorporada, código-fonte correspondente, avisos e bibliotecas incluídas. Ver [licenciamento Sharp](https://sharp.pixelplumbing.com/install/#licensing) e os arquivos de licença dos respectivos pacotes; este inventário não relicencia esses componentes.
 
 ## React, React DOM e Scheduler — MIT
 
@@ -122,6 +132,34 @@ O aviso de Lucide identifica partes originadas de Feather sob MIT. Para preserva
 MIT License
 
 Copyright (c) 2013-2022 Cole Bemis
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## Hono - MIT
+
+Fonte: arquivo LICENSE de hono 4.13.14, incorporado ao bundle Worker.
+
+```text
+MIT License
+
+Copyright (c) 2021 - present, Yusuke Wada and Hono contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
