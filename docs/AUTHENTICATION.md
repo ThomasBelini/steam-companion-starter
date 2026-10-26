@@ -2,6 +2,10 @@
 
 Esta especificação prepara a implementação futura. **Nenhuma resposta OpenID é aceita, nenhum token é emitido e nenhum usuário se autentica no backend atual.** As rotas reservadas retornam 501/401, independentemente de cookies, headers ou linhas no banco. Não há opção de configuração que habilite um login simplificado.
 
+A migração 0005 reforça somente a integridade SQL: vínculos de origem únicos, consumo/revogação irreversíveis e dados legados sem promoção automática. Leia [D1_INTEGRITY](D1_INTEGRITY.md) para upgrade, exclusões e limites dos testes. A política de 1 hora absoluta/15 minutos inativa continua a mesma; alternativas desktop estão documentadas, sem alteração automática. `integrity_version = 1` não comprova login.
+
+**Obrigatório para o futuro middleware:** negar versão legada, origem ausente ou divergente e sessão expirada/inativa/revogada, sem fallback por token existente. Essa verificação de leitura ainda não está implementada; antes de habilitar login, comprovar testes HTTP negativos e emissão somente após identidade OpenID verificada. As rotas atuais negam acesso incondicionalmente.
+
 ## Responsabilidades e fluxo futuro
 
 ```text
@@ -53,6 +57,7 @@ Antes de habilitar cookies em produção, comprovar origem/HTTPS corretos e pol�
 - `auth_attempts`: hash de estado e desafio, canal web/desktop, criação, expiração até cinco minutos e consumo.
 - `openid_nonces`: hash único, criação e expiração até dez minutos. Validação de timestamp e tolerância de relógio ocorrerão no protocolo; TTL no banco sozinho não verifica frescor.
 - `desktop_grants`: hash do código, tentativa única, usuário/desafio, expiração até 60 segundos e consumo.
+- `session_origins`: histórico de emissão por tentativa/grant, ligado ao usuário e separado da limpeza temporal; sessões apontam para essa origem única. Dados anteriores a 0005 recebem versão legada e não podem gerar novas sessões.
 
 Índices de expiração permitem limpeza futura. Resgates e nonces deverão ser consumidos em operações condicionais/atômicas; uma sessão expirada/revogada não pode ser aceita porque a limpeza periódica ainda não ocorreu. As tabelas e testes SQL atuais demonstram restrições e primitivas, **não implementam o handshake, logout, middleware de sessão ou proteção CSRF operacional**.
 

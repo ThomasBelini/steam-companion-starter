@@ -55,6 +55,9 @@ O comando local grava estado em `.wrangler/state`, ignorado pelo Git. Não utili
 | `0002_data_validation.sql` | Triggers para SteamID64, AppID positivo/uint32 e preferências em objeto JSON limitado; verifica dados legados sem apagá-los. |
 | `0003_auth_foundation.sql` | Estruturas de sessões, tentativas, nonces e grants de retorno desktop, com hashes e expiração. Não implementa autenticação. |
 | `0004_null_and_utf8_validation.sql` | Fecha a exceção de PK TEXT nula do SQLite e aplica o limite JSON de 16 KiB em bytes UTF-8. Não reescreve migrações já aplicadas. |
+| `0005_auth_integrity.sql` | Vínculo único de emissão, consumo/revogação irreversíveis, campos imutáveis, validações temporais e representação integral de IDs/hashes. Preserva linhas anteriores como legadas; não habilita login. |
+
+O banco passa a ter nove tabelas, incluindo `session_origins`. Veja [D1_INTEGRITY](D1_INTEGRITY.md) para regras de inserção, histórico que sobrevive à limpeza temporal, exclusão por usuário, upgrade e diferenças entre testes D1 e concorrência HTTP. O futuro middleware precisa rejeitar proveniência legada, além de expiração/revogação.
 
 Dados legados inválidos fazem a migração falhar; não há exclusão corretiva automática. As mudanças de cada migração são atômicas no executor D1. Antes de uso real, será preciso revisar o esquema e validar migração, recuperação e limpeza de registros expirados no ambiente autorizado.
 

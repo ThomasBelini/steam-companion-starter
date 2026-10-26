@@ -2,6 +2,8 @@
 
 **ALERTA:** existe backend local com Hono/Workers e D1 emulado, mas o protótipo não contém login ou autenticação operacional. As rotas de auth/dados privados permanecem bloqueadas; não deve ser representado como serviço autenticado. A especificação futura está em [AUTHENTICATION.md](AUTHENTICATION.md) e a execução local em [BACKEND.md](BACKEND.md).
 
+A revisão e as garantias da migração 0005 estão em [D1_INTEGRITY](D1_INTEGRITY.md): uma origem por sessão, proteção contra reativação por UPDATE, preservação de dados legados e limpeza temporal que não exclui sessões válidas. São controles SQL locais; não substituem verificação Steam, autorização ou testes de concorrência HTTP. Login continua bloqueado pelos riscos da [revisão](SECURITY_REVIEW.md).
+
 ## Login
 - Usar Steam OpenID 2.0 no navegador externo, com página realmente hospedada pela Steam.
 - Verificar a resposta OpenID no servidor (Steam `check_authentication`, origem, domínio de retorno, nonce, anti-replay e SteamID64 validado).

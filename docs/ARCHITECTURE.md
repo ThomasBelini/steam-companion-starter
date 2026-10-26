@@ -48,6 +48,7 @@ O Worker atual só disponibiliza `/health`; reservas `/auth/*` e `/api/*` negam 
 - `user_goals`: steam_id + app_id + state.
 - `sessions`: estrutura preparatória de hash, usuário, expiração, revogação e vínculo CSRF; sem emissão/validação HTTP nesta etapa.
 - `auth_attempts`, `openid_nonces`, `desktop_grants`: estrutura preparatória para tentativa, antirreplay e retorno desktop.
+- `session_origins`: histórico de emissão com origem única; a limpeza de tentativas/grants não apaga sessões. Legado e garantias SQL de 0005 estão em [D1_INTEGRITY](D1_INTEGRITY.md).
 - `saved_guides`: proposta futura, ainda não há tabela ou funcionalidade.
 
 Veja as [migrações](../backend/migrations/) e sua revisão em [BACKEND.md](BACKEND.md). A migração original foi preservada; as seguintes validam os dados e acrescentam as estruturas. Isso não torna a aplicação pronta para contas reais.

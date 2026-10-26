@@ -7,7 +7,7 @@ import type { Bindings } from '../src/bindings';
 let proxy: PlatformProxy<Bindings>;
 const userA = '10000000000000000';
 const userB = '10000000000000001';
-const now = 1700000000;
+let now: number;
 const token = 'a'.repeat(64);
 const csrf = 'b'.repeat(64);
 const state = 'c'.repeat(64);
@@ -31,6 +31,7 @@ beforeAll(async () => {
       ]);
     }
   }
+  now = (await proxy.env.DB.prepare('SELECT unixepoch() AS now').first<{ now: number }>())!.now;
 });
 afterAll(async () => { await proxy?.dispose(); });
 
@@ -115,10 +116,10 @@ describe('rotas do backend local', () => {
 });
 
 describe('migrações versionadas no D1 emulado', () => {
-  it('cria as oito tabelas, mantém privacidade padrão e ativa chaves estrangeiras', async () => {
+  it('cria as nove tabelas, mantém privacidade padrão e ativa chaves estrangeiras', async () => {
     const tables = await proxy.env.DB.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' ORDER BY name").all<{ name: string }>();
     expect(tables.results.map(row => row.name)).toEqual([
-      'auth_attempts', 'desktop_grants', 'openid_nonces', 'sessions', 'user_goals', 'user_settings', 'user_wishlist', 'users',
+      'auth_attempts', 'desktop_grants', 'openid_nonces', 'session_origins', 'sessions', 'user_goals', 'user_settings', 'user_wishlist', 'users',
     ]);
     expect((await proxy.env.DB.prepare('SELECT profile_visibility FROM users WHERE steam_id = ?').bind(userA).first<{ profile_visibility: string }>())?.profile_visibility).toBe('private');
     expect((await proxy.env.DB.prepare('PRAGMA foreign_keys').first<{ foreign_keys: number }>())?.foreign_keys).toBe(1);
@@ -163,16 +164,18 @@ describe('migrações versionadas no D1 emulado', () => {
   });
 
   it('sessões preparatórias exigem hash, vínculo, prazo curto e CSRF para web', async () => {
-    const sql = 'INSERT INTO sessions (token_hash, steam_id, client_kind, csrf_token_hash, created_at, expires_at, last_seen_at) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    await expect(proxy.env.DB.prepare(sql).bind('raw-token', userA, 'desktop', null, now, now + 60, now).run()).rejects.toThrow();
-    await expect(proxy.env.DB.prepare(sql).bind(token, userA, 'web', null, now, now + 60, now).run()).rejects.toThrow();
-    await expect(proxy.env.DB.prepare(sql).bind(token, userA, 'desktop', null, now, now + 3601, now).run()).rejects.toThrow();
-    await proxy.env.DB.prepare(sql).bind(token, userA, 'web', csrf, now, now + 3600, now).run();
+    const attempt = '1'.repeat(64);
+    await proxy.env.DB.prepare('INSERT INTO auth_attempts (state_hash, challenge_hash, return_channel, created_at, expires_at) VALUES (?, ?, ?, ?, ?)').bind(attempt, challenge, 'web', now, now + 300).run();
+    const sql = 'INSERT INTO sessions (token_hash, steam_id, client_kind, csrf_token_hash, created_at, expires_at, last_seen_at, source_attempt_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    await expect(proxy.env.DB.prepare(sql).bind('raw-token', userA, 'web', csrf, now, now + 60, now, attempt).run()).rejects.toThrow();
+    await expect(proxy.env.DB.prepare(sql).bind(token, userA, 'web', null, now, now + 60, now, attempt).run()).rejects.toThrow();
+    await expect(proxy.env.DB.prepare(sql).bind(token, userA, 'web', csrf, now, now + 3601, now, attempt).run()).rejects.toThrow();
+    await proxy.env.DB.prepare(sql).bind(token, userA, 'web', csrf, now, now + 3600, now, attempt).run();
     const select = 'SELECT steam_id FROM sessions WHERE token_hash = ? AND revoked_at IS NULL AND expires_at > ? AND last_seen_at > ?';
     expect(await proxy.env.DB.prepare(select).bind(token, now + 1, now + 1 - 900).first()).toMatchObject({ steam_id: userA });
     expect(await proxy.env.DB.prepare(select).bind(token, now + 3600, now).first()).toBeNull();
     expect(await proxy.env.DB.prepare(select).bind(token, now + 901, now + 1).first()).toBeNull();
-    await proxy.env.DB.prepare('UPDATE sessions SET revoked_at = ? WHERE token_hash = ?').bind(now + 2, token).run();
+    await proxy.env.DB.prepare('UPDATE sessions SET revoked_at = ? WHERE token_hash = ?').bind(now, token).run();
     expect(await proxy.env.DB.prepare(select).bind(token, now + 3, now - 897).first()).toBeNull();
     // A existência de linha no banco não habilita autenticação no HTTP.
     expect((await app.request('/api/library', { headers: { Authorization: `Bearer ${token}` } }, proxy.env)).status).toBe(401);
@@ -187,15 +190,15 @@ describe('migrações versionadas no D1 emulado', () => {
     expect(await proxy.env.DB.prepare(consume).bind(now + 1, grant, '0'.repeat(64), now + 1).first()).toBeNull();
     expect(await proxy.env.DB.prepare(consume).bind(now + 60, grant, challenge, now + 60).first()).toBeNull();
     const results = await proxy.env.DB.batch([
-      proxy.env.DB.prepare(consume).bind(now + 2, grant, challenge, now + 2),
-      proxy.env.DB.prepare(consume).bind(now + 2, grant, challenge, now + 2),
+      proxy.env.DB.prepare(consume).bind(now, grant, challenge, now),
+      proxy.env.DB.prepare(consume).bind(now, grant, challenge, now),
     ]);
     expect(results.map(result => result.results.length)).toEqual([1, 0]);
   });
 
   it('apagar um usuário revoga seus dados por cascata sem apagar os do outro', async () => {
     await proxy.env.DB.prepare('DELETE FROM users WHERE steam_id = ?').bind(userA).run();
-    for (const table of ['sessions', 'desktop_grants', 'user_settings', 'user_goals', 'user_wishlist']) {
+    for (const table of ['sessions', 'session_origins', 'desktop_grants', 'user_settings', 'user_goals', 'user_wishlist']) {
       expect((await proxy.env.DB.prepare(`SELECT count(*) AS count FROM ${table} WHERE steam_id = ?`).bind(userA).first<{ count: number }>())?.count).toBe(0);
     }
     expect((await proxy.env.DB.prepare('SELECT count(*) AS count FROM user_wishlist WHERE steam_id = ?').bind(userB).first<{ count: number }>())?.count).toBe(1);
