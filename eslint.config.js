@@ -21,7 +21,13 @@ export default defineConfig([
     extends: [reactHooks.configs.flat.recommended, reactRefresh.configs.vite],
   },
   {
-    files: ['*.{js,ts}', 'scripts/**/*.mjs'],
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: ['**/backend/**', '**/*.server', '**/*.server.ts'] }],
+    },
+  },
+  {
+    files: ['*.{js,ts}', 'scripts/**/*.mjs', 'backend/**/*.ts'],
     languageOptions: { globals: globals.node },
   },
 ]);

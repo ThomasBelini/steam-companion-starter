@@ -116,7 +116,13 @@ Antes de publicar manualmente, revise os arquivos, o diff e o histórico Git. N�
 
 A [análise técnica](docs/AUDIT.md) registra o estado da revisão inicial, suas verificações e limitações. O [plano de desenvolvimento](docs/ROADMAP.md) organiza as etapas propostas e seus critérios de aceite. Novas funcionalidades aguardam revisão desse planejamento.
 
-A análise é um registro da etapa anterior: a preparação atual acrescenta ESLint, testes automatizados e CI. Login Steam, banco online, integrações externas e instalador continuam fora desta etapa.
+A análise é um registro da etapa anterior. A preparação de publicação acrescentou ESLint, testes automatizados e CI. Login Steam, banco online, consultas externas reais e instalador continuam fora desta etapa.
+
+### Preparação da biblioteca Steam
+
+A [camada de integração Steam](docs/STEAM_LIBRARY.md) agora inclui contratos, validação de respostas, provedor de biblioteca e cliente exclusivo do servidor para GetOwnedGames, GetPlayerAchievements e GetSchemaForGame. Há tratamento de privacidade ambígua, respostas incompletas, indisponibilidade, limites, timeout e cancelamento. A interface usa o contrato de provedor, preservando o demo como padrão e sem alterar o layout.
+
+**Não há consulta real ativa, login ou chave configurada.** Os testes usam somente dados sintéticos e rede simulada. Não configure chave em `VITE_*` nem importe o cliente de servidor na aplicação. A elegibilidade da conta do operador, backend seguro, autorização, política de privacidade, cache e limites globais ainda precisam ser concluídos antes do uso real. Os dados e termos da Steam não são cobertos pela licença MIT do projeto.
 
 ## Licença
 

@@ -2,7 +2,8 @@ export type Achievement = {
   id: string;
   name: string;
   description: string;
-  achieved: boolean;
+  achieved: boolean | null;
+  hidden?: boolean;
   // Nunca inferir tempo ou dificuldade a partir da raridade.
   estimatedDifficulty: 'desconhecida' | 'fácil' | 'média' | 'difícil';
   guideStatus: 'não-verificado' | 'indisponível';
@@ -11,8 +12,10 @@ export type Achievement = {
 export type Game = {
   appid: number;
   title: string;
-  totalMinutes: number;
+  totalMinutes: number | null;
   achievements: Achievement[];
+  achievementsStatus?: 'ready' | 'none' | 'not-loaded' | 'incomplete' | 'private-or-unavailable' | 'unavailable';
+  source?: 'demo' | 'steam';
   accent: string;
   coverMark: string;
 };
@@ -31,5 +34,6 @@ export type Deal = {
 };
 
 export interface LibraryProvider {
-  getGames(): Promise<Game[]>;
+  readonly source: 'demo' | 'steam';
+  getGames(signal?: AbortSignal): Promise<import('./library/contracts').LibraryResult>;
 }

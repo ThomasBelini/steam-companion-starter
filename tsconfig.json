@@ -28,6 +28,7 @@
     "src",
     "vite.config.ts",
     "vitest.config.ts",
-    "tests"
+    "tests",
+    "backend/steam"
   ]
 }

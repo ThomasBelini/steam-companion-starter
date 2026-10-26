@@ -9,7 +9,7 @@ Documentação oficial:
 
 Objetivos iniciais: OpenID (identidade), GetOwnedGames (jogos/tempo), GetPlayerAchievements + GetSchemaForGame (conquistas). A configuração de privacidade e disponibilidade dos métodos limitam o que se pode ler; autenticar não concede privilégios extras sobre biblioteca privada.
 
-Verificar: requisito do domínio da Steam Web API Key com subdomínio gratuito, callbacks HTTPS e limites de requisição.
+Pesquisa oficial e preparação do cliente: [STEAM_LIBRARY.md](STEAM_LIBRARY.md). A API é gratuita segundo os termos, com limite de 100.000 chamadas/dia, mas emissão de chave para a conta do operador e domínio gratuito ainda não foram comprovados. Não há integração ativa com conta real.
 
 ## Promoções
 - **Steam:** APIs e/ou parceiros com permissão.

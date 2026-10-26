@@ -1,4 +1,5 @@
 import type { Game } from './types';
+import { achievementPercent } from './library/progress';
 
 function saveCanvas(canvas: HTMLCanvasElement, format: 'png' | 'jpeg', fileName: string) {
   const mime = format === 'png' ? 'image/png' : 'image/jpeg';
@@ -9,6 +10,8 @@ function saveCanvas(canvas: HTMLCanvasElement, format: 'png' | 'jpeg', fileName:
 }
 
 export function exportGameCard(game: Game, format: 'png' | 'jpeg') {
+  if ((game.achievementsStatus && !['ready', 'none'].includes(game.achievementsStatus))
+    || game.achievements.some(a => a.achieved === null)) throw new Error('Progresso indisponível para exportação.');
   const canvas = document.createElement('canvas');
   canvas.width = 1200;
   canvas.height = 630;
@@ -28,7 +31,7 @@ export function exportGameCard(game: Game, format: 'png' | 'jpeg') {
   ctx.fillRect(72, 82, 8, 458);
   ctx.fillStyle = '#9ba8be';
   ctx.font = 'bold 27px Arial, sans-serif';
-  ctx.fillText('STEAM COMPANION · DEMONSTRAÇÃO', 109, 122);
+  ctx.fillText(game.source === 'steam' ? 'STEAM COMPANION · STEAM' : 'STEAM COMPANION · DEMONSTRAÇÃO', 109, 122);
   ctx.fillStyle = '#f2f5fb';
   ctx.font = 'bold 68px Arial, sans-serif';
   ctx.fillText(game.title, 106, 241, 1000);
@@ -43,6 +46,7 @@ export function exportGameCard(game: Game, format: 'png' | 'jpeg') {
   ctx.fillRect(109, 470, 970 * progress, 23);
   ctx.fillStyle = '#9ba8be';
   ctx.font = '24px Arial, sans-serif';
-  ctx.fillText(`${Math.round(progress * 100)}% completo · dados fictícios`, 109, 542);
+  const label = game.achievementsStatus === 'none' ? 'Sem conquistas' : `${achievementPercent(game) ?? 0}% completo`;
+  ctx.fillText(`${label} · ${game.source === 'steam' ? 'dados Steam' : 'dados fictícios'}`, 109, 542);
   saveCanvas(canvas, format, `progresso-${game.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
 }

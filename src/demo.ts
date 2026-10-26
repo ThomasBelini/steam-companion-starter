@@ -46,5 +46,8 @@ export const demoDeals: Deal[] = [
 ];
 
 export class DemoLibraryProvider implements LibraryProvider {
-  async getGames(): Promise<Game[]> { return demoGames; }
+  readonly source = 'demo';
+  async getGames() {
+    return { ok: true as const, data: { games: structuredClone(demoGames), incomplete: false } };
+  }
 }

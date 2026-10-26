@@ -21,9 +21,13 @@
 ```
 
 ## Interfaces estáveis
-- `LibraryProvider.getGames()` entrega `Game[]` e não depende da interface gráfica. O demo usa `DemoLibraryProvider`.
+- `LibraryProvider.getGames(signal?)` entrega `LibraryResult`: jogos e indicador de incompletude, ou erro explícito. O demo usa o mesmo contrato; a UI recebe o provedor por injeção e inicia com `DemoLibraryProvider`.
 - `Game` usa AppID, minutos jogados, conquistas; ao ligar Steam real o modelo pode acrescentar propriedades opcionais sem quebrar componentes.
 - `Deal` tem `finalPriceVerified`, `regionVerified` e `sourceUrl`; não representa dados incompletos como fato certo.
+
+## Preparação da integração Steam
+
+Os contratos, normalizadores e `SteamLibraryProvider` estão implementados sem dependência de React. O transporte `SteamWebApi.server.ts` fica exclusivamente no backend, sem rota ou segredo configurado. A biblioteca é consultada separadamente das conquistas por jogo para evitar consultas em massa. Tempos e progresso desconhecidos não são convertidos em zero. Veja [STEAM_LIBRARY.md](STEAM_LIBRARY.md) para endpoints oficiais, limites, testes e trabalho ainda necessário antes de uma conta real.
 
 ## Regras
 - O frontend nunca comunica diretamente uma chave secreta a fornecedor externo.

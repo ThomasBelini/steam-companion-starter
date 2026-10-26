@@ -76,4 +76,21 @@ describe('exportação local do cartão', () => {
     expect(mocks.toDataURL).not.toHaveBeenCalled();
     expect(mocks.click).not.toHaveBeenCalled();
   });
+
+  it('não exporta progresso desconhecido como zero', () => {
+    expect(() => exportGameCard({ ...game, achievementsStatus: 'not-loaded', achievements: [] }, 'png')).toThrow('Progresso indisponível');
+    expect(() => exportGameCard({ ...game, achievements: game.achievements.map(a => ({ ...a, achieved: null })) }, 'png')).toThrow('Progresso indisponível');
+    expect(mocks.click).not.toHaveBeenCalled();
+  });
+
+  it('identifica a origem Steam sem rotular dados fornecidos como fictícios', () => {
+    exportGameCard({ ...game, source: 'steam', achievementsStatus: 'ready' }, 'png');
+    expect(mocks.context.fillText).toHaveBeenCalledWith('STEAM COMPANION · STEAM', 109, 122);
+    expect(mocks.context.fillText).toHaveBeenCalledWith('33% completo · dados Steam', 109, 542);
+  });
+
+  it('não apresenta jogo explicitamente sem conquistas como 0% completo', () => {
+    exportGameCard({ ...game, source: 'steam', achievementsStatus: 'none', achievements: [] }, 'png');
+    expect(mocks.context.fillText).toHaveBeenCalledWith('Sem conquistas · dados Steam', 109, 542);
+  });
 });
