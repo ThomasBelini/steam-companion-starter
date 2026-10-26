@@ -2,6 +2,8 @@
 
 O Tauri envolve a interface React/Vite existente sem recriá-la. Biblioteca, conquistas, promoções, desejos e exportação continuam no modo demonstrativo. Não há login, backend iniciado pelo executável, Steam dentro do WebView, consultas externas ou serviço pago.
 
+Evolução posterior: a [Fase 1 visual](VISUAL_DESIGN.md) redesenha somente biblioteca e navegação; registra 406 testes npm, novo build release e conferência no WebView2, sem alterar Rust, CSP ou capacidades. Os resultados de integração descritos abaixo são da etapa anterior e não aprovam a instalação ou novas funcionalidades.
+
 ## Pré-requisitos e resultado da inspeção
 
 Inspeção local atualizada após a instalação dos pré-requisitos pelo responsável (Windows x64):

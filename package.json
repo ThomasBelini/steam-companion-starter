@@ -26,7 +26,8 @@
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run && npm run test:backend",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run lint && npm run backend:db:migrate && npm test && npm run build && npm run backend:build",
+    "test:browser": "playwright test",
+    "check": "npm run typecheck && npm run lint && npm run backend:db:migrate && npm test && npm run test:browser && npm run build && npm run backend:build",
     "backend:dev": "wrangler dev --local --config backend/wrangler.jsonc --persist-to .wrangler/state",
     "backend:db:migrate": "wrangler d1 migrations apply DB --local --config backend/wrangler.jsonc --persist-to .wrangler/state",
     "backend:build": "wrangler deploy --dry-run --config backend/wrangler.jsonc --outdir dist/backend",
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261026.1",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.64.1",
     "@tauri-apps/cli": "2.12.4",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

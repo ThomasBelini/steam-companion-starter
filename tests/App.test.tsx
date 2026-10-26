@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import App from '../src/App';
@@ -99,7 +99,7 @@ describe('desejos e perfil demonstrativos', () => {
     await user.click(screen.getAllByRole('button', { name: 'Adicionar Chrono Vale à lista de desejos' })[0]);
     expect(screen.getAllByRole('button', { name: 'Remover Chrono Vale da lista de desejos' })).toHaveLength(3);
     await user.click(screen.getByRole('button', { name: /^Lista de desejos/ }));
-    expect(screen.getByText('Chrono Vale')).toBeVisible();
+    expect(within(screen.getByRole('main')).getByText('Chrono Vale')).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Remover' }));
     expect(screen.getByRole('heading', { name: 'Sua lista está vazia' })).toBeVisible();
   });

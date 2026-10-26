@@ -1,0 +1,34 @@
+:root {
+  --sc-canvas: #101010;
+  --sc-sidebar: #141414;
+  --sc-panel: #1a1a1a;
+  --sc-raised: #222222;
+  --sc-hover: #292929;
+  --sc-selected: #303030;
+  --sc-line: #2d2d2d;
+  --sc-line-strong: #505050;
+  --sc-text: #eeeeeb;
+  --sc-muted: #b9b9b5;
+  --sc-quiet: #a8a8a3;
+  --sc-accent: #c8c1af;
+  --sc-focus: #e3dfcf;
+  --sc-space-1: 4px;
+  --sc-space-2: 8px;
+  --sc-space-3: 12px;
+  --sc-space-4: 16px;
+  --sc-space-5: 24px;
+  --sc-space-6: 32px;
+  --sc-radius: 3px;
+  --sc-border: 1px solid var(--sc-line);
+  --sc-font: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --sc-text-xs: 12px;
+  --sc-text-sm: 14px;
+  --sc-text-base: 15px;
+  --sc-text-lg: 32px;
+  --sc-leading: 1.5;
+  --sc-weight-body: 400;
+  --sc-weight-label: 600;
+  --sc-weight-heading: 700;
+  --sc-transition: 140ms ease;
+  --sc-sidebar-width: 216px;
+}

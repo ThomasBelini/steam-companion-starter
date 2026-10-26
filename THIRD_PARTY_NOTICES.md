@@ -29,6 +29,7 @@ Ao redistribuir o código ou os arquivos web compilados, inclua este arquivo e L
 | @cloudflare/workers-types | 5.20261026.1 | MIT OR Apache-2.0 |
 | @tauri-apps/cli | 2.12.4 | Apache-2.0 OR MIT |
 | @eslint/js | 10.0.1 | MIT |
+| @playwright/test | 1.64.1 | Apache-2.0 |
 | @testing-library/jest-dom | 7.0.1 | MIT |
 | @testing-library/react | 16.3.3 | MIT |
 | @testing-library/user-event | 14.6.8 | MIT |
@@ -55,7 +56,7 @@ Os números contam entradas, incluindo variantes opcionais de plataforma e vers�
 | Licença declarada | Entradas |
 | --- | --- |
 | 0BSD | 1 |
-| Apache-2.0 | 37 |
+| Apache-2.0 | 40 |
 | Apache-2.0 OR MIT | 12 |
 | Apache-2.0 AND LGPL-3.0-or-later | 3 |
 | Apache-2.0 AND LGPL-3.0-or-later AND MIT | 1 |
@@ -71,6 +72,7 @@ Os números contam entradas, incluindo variantes opcionais de plataforma e vers�
 | MIT OR Apache-2.0 | 4 |
 
 - **Apache-2.0:** por exemplo TypeScript e componentes ESLint. Mantenha licença, avisos e NOTICE quando existirem ao redistribuir esses componentes. [Texto Apache](https://www.apache.org/licenses/LICENSE-2.0).
+- **Playwright:** `@playwright/test`, `playwright` e `playwright-core` 1.64.1 são ferramentas de teste sob Apache-2.0, sem inclusão no bundle da aplicação. Preserve LICENSE e NOTICE desses pacotes caso os redistribua; o NOTICE atribui código derivado do Puppeteer. No Windows os testes usam Edge instalado separadamente; no Linux, Chromium obtido pelo Playwright mantém suas próprias licenças/avisos. Não são incluídos no aplicativo ou publicados pelo projeto.
 - **Tauri:** CLI 2.12.4 e seus binários opcionais declaram Apache-2.0 OR MIT; textos em `node_modules/@tauri-apps/cli/LICENSE-*` e [fonte oficial](https://github.com/tauri-apps/tauri). O lockfile Rust fixa tauri 2.12.5, tauri-build 2.7.4 e wry 0.57.1 sob MIT/Apache-2.0; tao 0.37.2 declara Apache-2.0. Os metadados transitivos incluem também MIT, BSD, Zlib, Unicode-3.0 e MPL-2.0. cssparser 0.37.0, cssparser-macros 0.7.1, dtoa-short 0.3.5, option-ext 0.2.0 e selectors 0.38.0 declaram MPL-2.0: preserve as licenças e disponibilize os fontes cobertos conforme suas obrigações antes de redistribuir. Não foram modificadas crates de terceiros. O instalador local inclui LICENSE e este documento; isso não substitui reunir os textos/NOTICE nativos e os termos WebView2. O ícone geométrico original foi criado para este projeto, sem usar marca gráfica da Steam.
 - **BlueOak-1.0.0:** minimatch e versões aninhadas de lru-cache, usados no desenvolvimento. Ao redistribuí-los, preserve o texto ou o [link exigido pela licença Blue Oak](https://blueoakcouncil.org/license/1.0.0).
 - **CC-BY-4.0:** dados de caniuse-lite, versão 1.0.30001819, usados pelas ferramentas de compatibilidade. Fonte: [caniuse-lite](https://github.com/browserslist/caniuse-lite), com dados de [Can I use](https://caniuse.com/), sob [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Não foram modificados nesta revisão; atribuição e indicação de alterações são necessárias ao redistribuir/adaptar esses dados.

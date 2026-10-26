@@ -42,6 +42,11 @@ jobs:
         run: npm run backend:db:migrate
       - name: Executar testes
         run: npm test
+      - name: Preparar Chromium para testes de navegador no Linux
+        if: runner.os == 'Linux'
+        run: npx playwright install --with-deps chromium
+      - name: Testar interações reais no navegador
+        run: npm run test:browser
       - name: Compilar interface
         run: npm run build
       - name: Compilar Worker sem deploy

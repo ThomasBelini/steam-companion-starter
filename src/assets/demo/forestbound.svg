@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs><linearGradient id="mist" x2="0" y2="1"><stop stop-color="#a4afa0"/><stop offset=".55" stop-color="#667e72"/><stop offset="1" stop-color="#263f36"/></linearGradient><symbol id="pine" viewBox="0 0 150 500"><path d="m75 0 22 112-12-5 36 113-19-9 39 116-24-8 33 110-69-13v84H69v-84L0 429l33-110-24 8 39-116-19 9 36-113-12 5z"/></symbol></defs>
+  <path d="M0 0h1600v900H0z" fill="url(#mist)"/><circle cx="1040" cy="215" r="88" fill="#d5d7b8" opacity=".75"/>
+  <path d="m0 516 204-176 154 142 227-232 186 242 180-119 192 165 251-238 206 218v382H0z" fill="#718879"/><path d="m0 605 214-144 167 105 190-147 225 187 150-97 224 156 213-172 217 111v296H0z" fill="#48685a"/>
+  <g fill="#3b594b"><use href="#pine" x="60" y="160" width="160" height="580"/><use href="#pine" x="344" y="215" width="125" height="500"/><use href="#pine" x="1240" y="190" width="160" height="570"/><use href="#pine" x="1105" y="310" width="115" height="460"/></g>
+  <path d="m806 483-100 417h254L826 483z" fill="#aec0ac" opacity=".5"/><path d="m813 483-45 417h93L821 483z" fill="#dde0c0" opacity=".3"/>
+  <g fill="#213e31"><use href="#pine" x="-20" y="-130" width="290" height="1100"/><use href="#pine" x="1320" y="-140" width="300" height="1120"/><use href="#pine" x="190" y="240" width="180" height="700"/><use href="#pine" x="1140" y="280" width="185" height="680"/></g>
+  <path d="m0 832 185-39 185 48 245-30 157 53 192-65 220 55 200-66 216 53v59H0z" fill="#14291f"/>
+  <g transform="translate(813 687)" fill="#1d2c24"><circle cy="-45" r="12"/><path d="m-17-28 33-1 14 63-25 7 10 69H4L-5 56l-12 54h-11l8-73-17-4z"/><path d="m16-15 26 38 28 1-2 8-38-2-23-25z"/><path d="M66-11h4v124h-4z"/></g>
+</svg>
