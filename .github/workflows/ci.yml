@@ -1,0 +1,44 @@
+name: Verificações
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    # Runners padrão são gratuitos para repositórios públicos.
+    # Evita consumir cotas/billing se este workflow for usado em um repositório privado.
+    if: ${{ github.event.repository.private == false }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - name: Obter código
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Configurar Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Instalar dependências do lockfile
+        run: npm ci
+      - name: Verificar TypeScript
+        run: npm run typecheck
+      - name: Executar ESLint
+        run: npm run lint
+      - name: Executar testes
+        run: npm test
+      - name: Compilar interface
+        run: npm run build
