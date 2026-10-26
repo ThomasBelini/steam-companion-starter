@@ -20,7 +20,7 @@ O construtor exige explicitamente:
 
 - `fetcher`: transporte Fetch do servidor. Os testes usam mocks; não existe fallback para fetch global. Deve respeitar endpoint, sinal de cancelamento e bloqueio de redirects.
 - `discoverIdentity`: consulta confiável que devolve claimedId, identity, namespace e opEndpoint descobertos, ou NULL. O verificador compara cada campo. **O resolvedor real de descoberta ainda não foi implementado**, e não há resolvedor que simplesmente confia no callback por padrão. Ele deverá restringir hosts/redirects/tamanhos, usar transporte seguro e tratar parser/discovery adequadamente antes de uso conectado.
-- `lookupNonce`: consulta somente leitura que retorna exatamente `seen` ou `unseen`; resposta desconhecida, exceção ou timeout falha. O adaptador D1 real ainda não foi implementado.
+- `lookupNonce`: consulta somente leitura que retorna exatamente `seen` ou `unseen`; resposta desconhecida, exceção ou timeout falha. O [adaptador D1 preparatório](OPENID_D1_PREPARATION.md) fornece essa consulta e coordena gravação posterior, sem ligar rotas HTTP.
 - Opcionalmente `now`, relógio em milissegundos Unix do servidor, e timeout total inteiro entre 1 e 8.000 ms. Os testes usam relógio fixo; não aceitar horário do cliente como referência.
 
 Essas dependências são código confiável do backend. Não aceitar que cliente HTTP/React escolha implementações, booleanos de descoberta/verificação ou resultados serializados de sucesso. Um mock desonesto não prova autenticidade criptográfica; em produção a verificação direta deve vir da Steam pelo transporte confiável.
@@ -60,7 +60,7 @@ Um resultado positivo tem o estágio literal `assertion-verified-pending-atomic-
 
 A futura integração D1 deverá conferir novamente frescor e tentativa/browser binding, inserir nonce inédito e efetuar o consumo/criação correspondentes em uma transação que falhe integralmente se outra chamada vencer. Só depois será possível avançar no fluxo. TTL e limpeza não podem liberar um nonce ainda aceitável. A política não permite tratar falha do banco como `unseen`.
 
-`session_origins` e os guards de [D1_INTEGRITY](D1_INTEGRITY.md) não estão conectados a esse verificador. Continuam obrigatórios a rejeição de legado, a revisão das transições e os testes de concorrência entre requisições reais. Não há adapter de banco, nova migração ou escrita SQL nesta etapa.
+Na etapa isolada original não havia adapter de banco, nova migração ou escrita SQL. A preparação posterior está em [OPENID_D1_PREPARATION](OPENID_D1_PREPARATION.md): o verificador permanece inalterado e independente, mas um módulo externo agora registra asserção/nonce em D1 e prepara a rejeição de legado/proveniência ausente. Nenhuma rota o chama. Revisão das transições até emissão e testes de concorrência entre requisições reais continuam obrigatórios.
 
 ## Testes e verificação
 
@@ -79,6 +79,6 @@ Resultado desta etapa: `npm.cmd run check` aprovado, com **384 testes** (154 ger
 
 ## Bloqueadores que permanecem
 
-R01 continua aberto: vínculo navegador/dispositivo contra relay/login CSRF. R02 recebeu parser, transporte e conferência de descoberta, mas ainda depende de resolvedor real seguro, compatibilidade com Steam/Workers e revisão dos vetores. R03 continua pendente na integração atômica entre nonce, tentativa e grant/sessão. Também faltam armazenamento/IPC Tauri, autorização por usuário, CSRF operacional, revogação HTTP, privacidade, limites e comprovação da operação gratuita.
+R01 continua aberto: vínculo navegador/dispositivo contra relay/login CSRF. R02 recebeu parser, transporte e conferência de descoberta, mas ainda depende de resolvedor real seguro, compatibilidade com Steam/Workers e revisão dos vetores. R03 recebeu depois a [gravação atômica preparatória](OPENID_D1_PREPARATION.md) de asserção/nonce, mas continua pendente até grant/sessão e no ambiente distribuído. Também faltam armazenamento/IPC Tauri, autorização por usuário, CSRF operacional, revogação HTTP, privacidade/retenção, limites e comprovação da operação gratuita.
 
 Os [gates de segurança](SECURITY_REVIEW.md) não foram aprovados por estes testes. Rotas de autenticação e dados permanecem bloqueadas, e a ativação futura exige autorização e provas separadas. Esta etapa não realiza deploy, cria recursos remotos, faz commit ou push.

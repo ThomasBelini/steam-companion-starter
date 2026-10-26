@@ -57,7 +57,7 @@ As linhas legadas permanecem consultáveis, mas não podem originar novas sessõ
 
 **Requisito obrigatório antes de habilitar autenticação:** o futuro middleware deve rejeitar `integrity_version = 0`, origem ausente e qualquer vínculo divergente. A consulta de autorização deve exigir versão 1 e histórico correspondente ao token, usuário, tentativa e grant/canal, além dos prazos e da ausência de revogação. Encontrar uma linha por token não basta. Não pode haver fallback para legado nem promoção automática; é necessária nova autenticação validada.
 
-Essa negação na leitura **ainda depende do código futuro** e deve ter testes HTTP negativos obrigatórios antes de habilitar rotas privadas. Os triggers comprovam integridade de escrita, não validam uma sessão em um SELECT. Hoje a proteção HTTP efetiva é a negação incondicional de todas as rotas privadas/auth. Mesmo versão 1 e histórico consistente não substituem a comprovação de identidade pelo futuro verificador OpenID antes da criação da sessão.
+Na etapa 0005 essa negação na leitura ainda dependia de código futuro. A [preparação 0006](OPENID_D1_PREPARATION.md) acrescenta consulta isolada que exige também asserção registrada do mesmo usuário/canal e nega legado/expiração/revogação. Não é middleware HTTP: testes HTTP negativos continuam obrigatórios antes de habilitar rotas privadas. Os triggers comprovam integridade de escrita, não autenticidade Steam. Hoje a proteção HTTP efetiva continua sendo a negação incondicional de todas as rotas privadas/auth.
 
 ## Política de sessão desktop: mantida nesta etapa
 

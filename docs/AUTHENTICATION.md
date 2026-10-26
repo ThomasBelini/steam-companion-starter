@@ -2,11 +2,11 @@
 
 Esta especificação prepara a implementação futura. **Nenhuma resposta OpenID é aceita pelas rotas HTTP, nenhum token é emitido e nenhum usuário se autentica no backend atual.** As rotas reservadas retornam 501/401, independentemente de cookies, headers ou linhas no banco. Não há opção de configuração que habilite um login simplificado.
 
-O [verificador OpenID isolado](OPENID_VERIFIER.md) valida formato, campos assinados, retorno, nonce, tupla de descoberta injetada e resposta check_authentication com transporte injetado. Não está ligado ao Worker; seu sucesso indica somente asserção verificada pendente de consumo atômico. Resolvedor de descoberta e adaptador D1 reais continuam pendentes; testes usam mocks, sem autenticação Steam real.
+O [verificador OpenID isolado](OPENID_VERIFIER.md) valida formato, campos assinados, retorno, nonce, tupla de descoberta injetada e resposta check_authentication com transporte injetado. A [preparação OpenID/D1](OPENID_D1_PREPARATION.md) o compõe com contexto imutável da tentativa, consulta de replay e registro atômico de asserção/nonce. Não está ligada às rotas do Worker; nenhum resultado autoriza sessão. Descoberta real segura e integração do fluxo completo continuam pendentes; testes usam mocks, sem autenticação Steam real.
 
 A migração 0005 reforça somente a integridade SQL: vínculos de origem únicos, consumo/revogação irreversíveis e dados legados sem promoção automática. Leia [D1_INTEGRITY](D1_INTEGRITY.md) para upgrade, exclusões e limites dos testes. A política de 1 hora absoluta/15 minutos inativa continua a mesma; alternativas desktop estão documentadas, sem alteração automática. `integrity_version = 1` não comprova login.
 
-**Obrigatório para o futuro middleware:** negar versão legada, origem ausente ou divergente e sessão expirada/inativa/revogada, sem fallback por token existente. Essa verificação de leitura ainda não está implementada; antes de habilitar login, comprovar testes HTTP negativos e emissão somente após identidade OpenID verificada. As rotas atuais negam acesso incondicionalmente.
+**Obrigatório para o futuro middleware:** negar versão legada, origem/asserção ausente ou divergente e sessão expirada/inativa/revogada, sem fallback por token existente. A consulta preparatória de proveniência está implementada e testada isoladamente, mas não há middleware HTTP que a use. Antes de habilitar login, comprovar testes HTTP negativos e emissão somente após identidade OpenID verificada. As rotas atuais negam acesso incondicionalmente.
 
 ## Responsabilidades e fluxo futuro
 
@@ -60,6 +60,7 @@ Antes de habilitar cookies em produção, comprovar origem/HTTPS corretos e pol�
 - `openid_nonces`: hash único, criação e expiração até dez minutos. Validação de timestamp e tolerância de relógio ocorrerão no protocolo; TTL no banco sozinho não verifica frescor.
 - `desktop_grants`: hash do código, tentativa única, usuário/desafio, expiração até 60 segundos e consumo.
 - `session_origins`: histórico de emissão por tentativa/grant, ligado ao usuário e separado da limpeza temporal; sessões apontam para essa origem única. Dados anteriores a 0005 recebem versão legada e não podem gerar novas sessões.
+- `auth_attempt_contexts` e `verified_openid_assertions` (0006): retorno/realm e vínculo de navegador imutáveis; registro durável único da asserção com nonce. Callback reivindica uma única tentativa nesse registro; `consumed_at` continua reservado à emissão futura via guards 0005. Veja [transições e limites](OPENID_D1_PREPARATION.md), inclusive retenção ainda bloqueadora para dados reais.
 
 Índices de expiração permitem limpeza futura. Resgates e nonces deverão ser consumidos em operações condicionais/atômicas; uma sessão expirada/revogada não pode ser aceita porque a limpeza periódica ainda não ocorreu. As tabelas e testes SQL atuais demonstram restrições e primitivas, **não implementam o handshake, logout, middleware de sessão ou proteção CSRF operacional**.
 
@@ -67,7 +68,7 @@ O rascunho usa formatos de hash e prazos limitados por constraints. Revisar unic
 
 ## Requisitos a comprovar antes de implementar o login real
 
-1. Emissão/uso da chave do operador e domínio gratuito elegível, callback/realm HTTPS aceito pela Steam, conta de teste autorizada e visibilidade dos dados. Não adquirir domínio ou API paga para contornar o requisito de custo zero.
+1. Para identidade OpenID: origem gratuita elegível, callback/realm HTTPS aceito pela Steam e futura prova com conta de teste autorizada. OpenID não requer a chave Web API do operador; elegibilidade/chave e visibilidade para consultas à biblioteca são requisitos separados dessa integração posterior. Não adquirir domínio ou API paga para contornar o requisito de custo zero.
 2. Elegibilidade de Workers/D1 gratuitos, limites globais/por usuário, orçamento diário de consultas, prevenção de abuso e comportamento sem cobrança ao exceder cotas.
 3. Política de privacidade, consentimento/pedido do usuário, países de armazenamento, retenção/exclusão e avisos exigidos pela Steam. Dados Steam não são relicenciados como MIT.
 4. Compatibilidade da implementação OpenID com Workers e revisão do modelo de ameaças: assinatura/retorno falsos, SSRF, replay, corrida, sessão fixada, login CSRF, troca de conta e expiração.

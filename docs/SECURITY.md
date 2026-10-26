@@ -4,7 +4,7 @@
 
 A revisão e as garantias da migração 0005 estão em [D1_INTEGRITY](D1_INTEGRITY.md): uma origem por sessão, proteção contra reativação por UPDATE, preservação de dados legados e limpeza temporal que não exclui sessões válidas. São controles SQL locais; não substituem verificação Steam, autorização ou testes de concorrência HTTP. Login continua bloqueado pelos riscos da [revisão](SECURITY_REVIEW.md).
 
-O [verificador isolado](OPENID_VERIFIER.md) acrescenta validação de asserção e transporte limitado, testados com mocks. Seu resultado não autoriza sessão: descoberta real, nonce/transação D1, browser binding e autorização ainda precisam ser integrados e comprovados. Não existe rota de login ativa.
+O [verificador isolado](OPENID_VERIFIER.md) acrescenta validação de asserção e transporte limitado, testados com mocks. A [preparação D1](OPENID_D1_PREPARATION.md) registra asserção/nonce atomicamente e prepara leitura estrita de proveniência. Seu resultado não autoriza sessão: descoberta real, transação completa com grant/sessão, intenção do pareamento, middleware e autorização ainda precisam ser comprovados. Não existe rota de login ativa. A retenção/exclusão dos registros duráveis da migração 0006 ainda impede uso com dados reais.
 
 ## Login
 - Usar Steam OpenID 2.0 no navegador externo, com página realmente hospedada pela Steam.
