@@ -1,6 +1,8 @@
 # Arquitetura de autenticação Steam — proposta, ainda desativada
 
-Esta especificação prepara a implementação futura. **Nenhuma resposta OpenID é aceita, nenhum token é emitido e nenhum usuário se autentica no backend atual.** As rotas reservadas retornam 501/401, independentemente de cookies, headers ou linhas no banco. Não há opção de configuração que habilite um login simplificado.
+Esta especificação prepara a implementação futura. **Nenhuma resposta OpenID é aceita pelas rotas HTTP, nenhum token é emitido e nenhum usuário se autentica no backend atual.** As rotas reservadas retornam 501/401, independentemente de cookies, headers ou linhas no banco. Não há opção de configuração que habilite um login simplificado.
+
+O [verificador OpenID isolado](OPENID_VERIFIER.md) valida formato, campos assinados, retorno, nonce, tupla de descoberta injetada e resposta check_authentication com transporte injetado. Não está ligado ao Worker; seu sucesso indica somente asserção verificada pendente de consumo atômico. Resolvedor de descoberta e adaptador D1 reais continuam pendentes; testes usam mocks, sem autenticação Steam real.
 
 A migração 0005 reforça somente a integridade SQL: vínculos de origem únicos, consumo/revogação irreversíveis e dados legados sem promoção automática. Leia [D1_INTEGRITY](D1_INTEGRITY.md) para upgrade, exclusões e limites dos testes. A política de 1 hora absoluta/15 minutos inativa continua a mesma; alternativas desktop estão documentadas, sem alteração automática. `integrity_version = 1` não comprova login.
 

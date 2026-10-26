@@ -2,6 +2,8 @@
 
 O backend agora pode ser executado localmente com Hono no runtime Workers e D1 emulado. **Não há login, sessão aceita pelo HTTP, consulta Steam, banco online ou recurso remoto criado.** O React continua no modo demo e não precisa do backend para funcionar.
 
+O [verificador OpenID](OPENID_VERIFIER.md) é módulo independente, sem importação pelo Worker HTTP. Ele exige transporte, descoberta e consulta de replay injetados; os testes usam somente mocks. Resultado de asserção verificada ainda requer integração atômica antes de qualquer sessão.
+
 ## Execução no Windows
 
 Requisitos: Node 24 (mínimo 24.15), npm e Windows com suporte ao runtime local do Wrangler/workerd. O funcionamento foi validado nesta máquina; outro ambiente pode precisar dos pré-requisitos nativos indicados pela Cloudflare. Não é necessário login Cloudflare, domínio, token Cloudflare ou segredo Steam.

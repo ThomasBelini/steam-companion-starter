@@ -4,6 +4,8 @@ Data: 26/10/2026. Base inspecionada: commit `1f7111a07b51ec04cfb77747dea5bcb69ed
 
 Atualização posterior de integridade: [D1_INTEGRITY](D1_INTEGRITY.md) registra a migração 0005 e suas provas locais. As constatações abaixo descrevem a base original; R03 teve correções estruturais parciais, mas seus testes HTTP/protocolo e os gates continuam pendentes. R01/R02 permanecem críticos.
 
+Atualização posterior do verificador: [OPENID_VERIFIER](OPENID_VERIFIER.md) registra validações e transporte isolados com dependências simuladas. É avanço parcial de R02, sem resolvedor de descoberta conectado ou consumo D1 atômico; não conclui R01/R02/R03 nem autoriza o primeiro login real.
+
 **Parecer: NÃO autorizar ainda a primeira autenticação real com emissão de sessão.** Há bloqueadores críticos de vínculo navegador/desktop, verificação OpenID e emissão atômica. O backend atual mantém autenticação desativada; os riscos abaixo descrevem principalmente o que poderá acontecer se as rotas forem habilitadas sem esses controles. Não constituem prova de exploração do protótipo bloqueado.
 
 A revisão original acrescentou somente este relatório, sem login, Tauri, migração, sessão, recurso remoto, deploy ou credenciais reais. Os reforços SQL posteriores estão documentados no adendo acima. As recomendações do fluxo de autenticação continuam propostas, não propriedades já comprovadas do sistema.
