@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowRight, ChevronRight,
+  ChevronRight,
   Gamepad2, Heart, LibraryBig, LockKeyhole, Settings2,
-  ShieldCheck, ShoppingBag, Star, Tag,
+  ShieldCheck, Star, Tag,
 } from 'lucide-react';
 import { DemoLibraryProvider, demoDeals } from './demo';
 import { exportGameCard } from './exportImage';
@@ -13,11 +13,12 @@ import { LibraryHome } from './library/LibraryHome';
 import { LibraryArtwork } from './library/LibraryArtwork';
 import { demoFavoriteAppIds } from './library/demoPresentation';
 import { GameDetail } from './game/GameDetail';
+import { DealsPage } from './commerce/DealsPage';
+import { WishlistPage } from './commerce/WishlistPage';
 
 type Page = 'library' | 'deals' | 'wishlist' | 'profile';
 type GameView = 'all' | 'pending' | 'done';
 
-const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 const defaultProvider = new DemoLibraryProvider();
 const emptyGames: Game[] = [];
 const navItems: { id: Page; title: string; icon: typeof LibraryBig }[] = [
@@ -38,6 +39,7 @@ function App({ libraryProvider = defaultProvider }: { libraryProvider?: LibraryP
   const [sort, setSort] = useState<'hours' | 'progress' | 'name'>('hours');
   const [view, setView] = useState<GameView>('all');
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [dealSearch, setDealSearch] = useState('');
   const [format, setFormat] = useState<'png' | 'jpeg'>('png');
   const [favoriteState, setFavoriteState] = useState({ provider: libraryProvider, ids: isDemo ? [...demoFavoriteAppIds] : [] as number[] });
   const favoriteIds = favoriteState.provider === libraryProvider ? favoriteState.ids : [];
@@ -102,7 +104,7 @@ function App({ libraryProvider = defaultProvider }: { libraryProvider?: LibraryP
 
     <main className="main" id="main-content" ref={mainRef} tabIndex={-1}>
       <header className="topbar"><div className="breadcrumb"><span className="topbar-section">BIBLIOTECA</span><ChevronRight size={13} aria-hidden="true" /><strong>{title}</strong></div><div className="right-tags"><span className="pill-demo"><span aria-hidden="true" />PROTÓTIPO · SEM LOGIN</span><button className="icon-button" aria-label="Abrir perfil" title="Perfil — nenhuma conta conectada" onClick={() => goTo('profile')}><Settings2 size={16} aria-hidden="true" /></button></div></header>
-      <div className={`content ${page === 'library' ? selected ? 'game-detail-content' : 'library-content' : ''}`}>
+      <div className={`content ${page === 'library' ? selected ? 'game-detail-content' : 'library-content' : page === 'deals' || page === 'wishlist' ? 'commerce-content' : ''}`}>
         {selected && library?.ok && page === 'library' ? <GameDetail key={selected.appid}
           game={selected} demo={isDemo} onBack={() => goTo('library')}
           format={format} onFormat={setFormat} onExport={() => exportGameCard(selected, format)}
@@ -111,11 +113,10 @@ function App({ libraryProvider = defaultProvider }: { libraryProvider?: LibraryP
           search={search} onSearch={setSearch} view={view} onView={setView} sort={sort} onSort={setSort}
           favoriteIds={favoriteIds} onFavorite={toggleFavorite} onOpen={openGame}
           summary={{ complete, unlocked: totalUnlocked, achievements: totalAchievements, unavailable: progressUnavailable }}
-        /> : page === 'deals' ? <>
-          <div className="heading"><div><div className="eyebrow">COMPARAÇÃO DE PREÇOS</div><h1>Promoções</h1><p>Steam, Nuuvem e Eneba. Sempre conferindo região e preço final.</p></div><span className="subtle-badge"><Tag size={16}/> 3 lojas</span></div>
-          <section className="warning"><ShieldCheck size={19}/><div><strong>Preços inteiramente fictícios nesta demonstração.</strong><p>O aplicativo real nunca deve apresentar preço histórico, taxa ou ativação regional sem fontes confiáveis.</p></div></section>
-          <div className="deal-list">{demoDeals.map(deal => <div className="deal" key={deal.id}><div className="deal-symbol"><ShoppingBag size={22}/></div><div className="deal-title"><strong>{deal.title}</strong><span>{deal.store} · {deal.historicLowBRL === null ? 'Histórico indisponível' : `Mínimo ilustrativo: ${currency.format(deal.historicLowBRL)}`}</span><small>Taxas e ativação regional não verificadas</small></div><div className="deal-price"><strong>{currency.format(deal.priceBRL)}</strong>{deal.discountPercent !== null && <span>–{deal.discountPercent}% (demo)</span>}</div><button className={`wish-button ${wishlist.includes(deal.title) ? 'saved' : ''}`} onClick={() => toggleWishlist(deal.title)} aria-label={wishlist.includes(deal.title) ? `Remover ${deal.title} da lista de desejos` : `Adicionar ${deal.title} à lista de desejos`}><Heart size={20} fill={wishlist.includes(deal.title) ? 'currentColor' : 'none'}/></button></div>)}</div>
-        </> : page === 'wishlist' ? <><div className="heading"><div><div className="eyebrow">JOGOS DE INTERESSE</div><h1>Lista de desejos</h1><p>Uma lista local de demonstração. Ainda não é sincronizada com a Steam.</p></div></div>{wishlist.length ? <div className="deal-list">{wishlist.map(name => <div className="deal" key={name}><div className="deal-symbol"><Star size={20}/></div><div className="deal-title"><strong>{name}</strong><span>Adicionado manualmente no protótipo</span></div><button className="ghost" onClick={() => toggleWishlist(name)}>Remover</button></div>)}</div> : <div className="empty"><Heart size={34}/><h2>Sua lista está vazia</h2><p>Vá até Promoções e clique no coração de um jogo.</p><button className="primary" onClick={() => goTo('deals')}>Ver promoções <ArrowRight size={16}/></button></div>}</> : <><div className="heading"><div><div className="eyebrow">SEGURANÇA EM PRIMEIRO LUGAR</div><h1>Minha conta</h1><p>A integração oficial Steam OpenID será feita somente após a validação no backend.</p></div></div><div className="profile-panel"><div className="profile-icon"><LockKeyhole size={36}/></div><h2>Nenhuma conta conectada</h2><p>Este protótipo não pede senha, código Steam Guard, chave da API ou cookies. O login real abrirá o site oficial da Steam no navegador e será verificado por um backend seguro.</p><div className="disabled-button" aria-disabled="true">Entrar com Steam — em desenvolvimento</div><span className="micro">Não existe autenticação fictícia nem credencial armazenada neste protótipo.</span></div></>}
+        /> : page === 'deals' ? <DealsPage deals={demoDeals} wishlist={wishlist} search={dealSearch} onSearch={setDealSearch} onToggle={toggleWishlist} />
+          : page === 'wishlist' ? <WishlistPage deals={demoDeals} wishlist={wishlist} onRemove={toggleWishlist}
+            onBrowse={() => { setDealSearch(''); goTo('deals'); }} onCompare={name => { setDealSearch(name); goTo('deals'); }} />
+          : <><div className="heading"><div><div className="eyebrow">SEGURANÇA EM PRIMEIRO LUGAR</div><h1>Minha conta</h1><p>A integração oficial Steam OpenID será feita somente após a validação no backend.</p></div></div><div className="profile-panel"><div className="profile-icon"><LockKeyhole size={36}/></div><h2>Nenhuma conta conectada</h2><p>Este protótipo não pede senha, código Steam Guard, chave da API ou cookies. O login real abrirá o site oficial da Steam no navegador e será verificado por um backend seguro.</p><div className="disabled-button" aria-disabled="true">Entrar com Steam — em desenvolvimento</div><span className="micro">Não existe autenticação fictícia nem credencial armazenada neste protótipo.</span></div></>}
       </div>
     </main>
   </div>;

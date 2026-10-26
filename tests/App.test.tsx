@@ -100,7 +100,7 @@ describe('desejos e perfil demonstrativos', () => {
     expect(screen.getAllByRole('button', { name: 'Remover Chrono Vale da lista de desejos' })).toHaveLength(3);
     await user.click(screen.getByRole('button', { name: /^Lista de desejos/ }));
     expect(within(screen.getByRole('main')).getByText('Chrono Vale')).toBeVisible();
-    await user.click(screen.getByRole('button', { name: 'Remover' }));
+    await user.click(screen.getByRole('button', { name: 'Remover Chrono Vale da lista de desejos' }));
     expect(screen.getByRole('heading', { name: 'Sua lista está vazia' })).toBeVisible();
   });
 

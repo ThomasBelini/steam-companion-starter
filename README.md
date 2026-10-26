@@ -11,8 +11,8 @@ Um aplicativo Windows para acompanhar a biblioteca Steam, guiar conquistas rumo 
 - Biblioteca demonstrativa com pesquisa, filtros, ordenação e progresso.
 - Biblioteca visual em grafite/preto, banner ilustrativo de recentes, capas originais e favoritos em memória (independentes da lista de desejos).
 - Página individual demonstrativa com banner/capa originais, resumo, conquistas obtidas/pendentes, navegação por seções e exportação PNG/JPEG. Dados desconhecidos permanecem distintos de zero.
-- Comparação demonstrativa de preços (valores inventados, claramente identificados).
-- Lista de desejos local (em memória, reinicia ao recarregar).
+- Promoções em grafite/preto com capas originais, comparação por jogo/loja, busca e filtros. Todos os preços são fictícios; ativação, taxas e histórico real não estão verificados.
+- Lista de desejos local com capas, ofertas demonstrativas, busca, filtros e adição/remoção (em memória, reinicia ao recarregar). Alertas ainda indisponíveis.
 - Exportação **real** de imagem PNG ou JPEG para um jogo demonstrativo via Canvas.
 - Tela de perfil com explicação sobre segurança (login real desabilitado).
 - Aplicativo Windows Tauri 2 com a mesma interface demonstrativa; build release e conferência funcional no WebView2 aprovados nesta máquina. Veja [DESKTOP](docs/DESKTOP.md).
@@ -29,6 +29,8 @@ Um aplicativo Windows para acompanhar a biblioteca Steam, guiar conquistas rumo 
 Não há formulário de senha, Steam Guard ou API key.
 
 A [Fase 1 do redesenho visual](docs/VISUAL_DESIGN.md) abrange navegação e biblioteca, usando as capturas Library Home/Library Gamepage do SpaceTheme como referência. Os jogos recentes têm ordem ilustrativa, sem histórico Steam; dois favoritos de exemplo são restaurados ao reiniciar. A [Fase 2](docs/GAME_DETAIL_DESIGN.md) aplica a mesma identidade à página individual. Guias e recomendações continuam indisponíveis; não é necessário instalar Millennium.
+
+A [Fase 3](docs/COMMERCE_DESIGN.md) aplica essa identidade somente a Promoções e Lista de desejos. Use o coração nas ofertas para adicionar/remover jogos; em desejos, “Comparar ofertas” volta às ofertas do jogo. Os cinco registros demonstrativos originais foram preservados, sem consulta às lojas nem compra. Os mínimos ilustrativos não são um histórico real, e a presença de uma oferta demo não comprova disponibilidade comercial.
 
 ## Rodar no Windows pelo VS Code
 
@@ -115,6 +117,8 @@ O ESLint verifica JavaScript/TypeScript, regras de Hooks e React Refresh; avisos
 `npm.cmd run test:browser` executa a regressão Playwright em navegador real: limpar busca e filtro por mouse, Tab/Enter e Tab/Espaço, em sete tamanhos de janela entre 320 e 1440 px. Esse teste também faz parte de `check`. No Windows, usa o Microsoft Edge instalado, em perfil temporário/headless, sem acessar perfil ou conta pessoal. Se Edge estiver ausente, instale-o pelo site oficial da Microsoft; o teste não instala navegadores automaticamente. No Linux, prepare uma vez o Chromium com `npx playwright install --with-deps chromium` (download gratuito; dependências do sistema podem exigir privilégios). A CI executa essa preparação somente no Linux.
 
 Os testes de navegador também cobrem as páginas individuais de todos os jogos demo, retorno à biblioteca preservando busca/filtro, âncoras por mouse/teclado, layouts de 320 a 1920 px, redimensionamento e arquivos PNG/JPEG efetivamente baixados com 1200×630. Os estados sem dados/privados/incompletos e as falhas de exportação têm testes de componente com dados locais; não representam consultas Steam reais.
+
+Promoções e desejos têm regressões de agrupamento/comparação entre lojas, busca/filtros, adição/remoção por mouse e teclado, foco após remoção, estados vazios e recarga. A suíte [commerce.spec.ts](tests/browser/commerce.spec.ts) também verifica layouts de 320 a 1920 px e os avisos de preços fictícios. A conferência complementar do executável Windows/WebView2 está registrada em [COMMERCE_DESIGN](docs/COMMERCE_DESIGN.md).
 
 O runner inicia e encerra seu próprio Vite em `http://127.0.0.1:4173`, separado da porta 5173 do desenvolvimento. Mantenha 4173 livre. As interações usam somente o demo local. Resultados e diagnósticos ficam ignorados pelo Git em `test-results/` e `playwright-report/`. A análise da falha de clique do navegador integrado está em [VISUAL_DESIGN](docs/VISUAL_DESIGN.md#investigação-do-clique-em-limpar-busca-e-filtros).
 
