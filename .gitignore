@@ -17,6 +17,7 @@ coverage/
 .target/
 target/
 src-tauri/target/
+src-tauri/gen/
 *.db
 *.db-*
 *.sqlite

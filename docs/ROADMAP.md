@@ -50,6 +50,8 @@ Rotas privadas derivam o SteamID da sessão, com consultas parametrizadas e limi
 
 ## Etapa 4 — primeiro aplicativo Windows com biblioteca e conquistas
 
+**Demo desktop:** Tauri 2 com janela, CSP e capacidades sem permissões; Cargo.lock versionado. Build release, três testes Rust e conferência funcional/exportação nativa no WebView2 aprovados. NSIS gerado sem instalação. Nenhuma integração real ou login foi ligado; instalação, distribuição e os critérios de biblioteca real abaixo continuam pendentes. Veja [DESKTOP](DESKTOP.md).
+
 **Entregas futuras:** Tauri 2 com CSP, IPC/capacidades mínimas, navegador externo para login e sessão em armazenamento seguro. Integrar biblioteca/conquistas à API própria, com lotes/paginação quando necessários, TTL, backoff e sincronização manual inicial. Tratar perfis privados, dados indisponíveis, falhas parciais e logout durante sincronização.
 
 **Aceite:** instalador de teste funciona no Windows suportado com WebView2; nenhum segredo no bundle, log ou URL. Biblioteca vazia, grande e privada funcionam corretamente. Falha da API não apaga progresso nem vira zero jogos. Nenhuma operação de escrita na Steam.

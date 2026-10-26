@@ -1,0 +1,7 @@
+{
+  "identifier": "main-demo",
+  "description": "Interface demonstrativa local sem permissões IPC ou plugins nativos.",
+  "local": true,
+  "windows": ["main"],
+  "permissions": []
+}

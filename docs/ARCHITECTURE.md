@@ -2,14 +2,14 @@
 
 ## Stack
 - Frontend: React + TypeScript (protótipo executável em Vite).
-- Desktop: Tauri 2 (adicionar após protótipo e pré-requisitos Windows).
+- Desktop: Tauri 2 em [src-tauri](../src-tauri/), reutilizando o build Vite; build Windows, testes Rust e conferência do release no WebView2 aprovados. Instalação/desinstalação e compatibilidade ampliada ainda pendentes. Veja [DESKTOP](DESKTOP.md).
 - Backend local implementado: Cloudflare Workers + Hono. Produção futura exige HTTPS e autenticação revisada; não há deploy.
 - Persistência local: D1 emulado pelo Wrangler com migrações versionadas. D1 remoto e sincronização ainda não existem; o frontend não acessa o banco.
 - Integrações: Steam APIs documentadas, provedores de preço validados, catálogos de guias com fontes.
 
 ## Fluxo de dados
 
-Fluxo alvo futuro; as conexões externas, Tauri e autenticação abaixo ainda não estão ativas:
+Fluxo alvo futuro; conexões externas, IPC autenticado e autenticação abaixo ainda não estão ativas. A estrutura desktop atual envolve somente o demo:
 
 ```text
 [Aplicativo Tauri + React]
@@ -34,6 +34,7 @@ Os contratos, normalizadores e `SteamLibraryProvider` estão implementados sem d
 O Worker atual só disponibiliza `/health`; reservas `/auth/*` e `/api/*` negam acesso incondicionalmente. Há migrações e testes no D1 emulado, sem produção ou autenticação fake. Configuração, comandos Windows e CI estão em [BACKEND.md](BACKEND.md); OpenID, retorno desktop, sessões, logout, CSRF e bloqueadores estão em [AUTHENTICATION.md](AUTHENTICATION.md).
 
 ## Regras
+- Desktop atual: sem plugins, comandos de aplicação ou permissões IPC; CSP de produção sem rede, navegação limitada à origem interna e popups bloqueados. Backend não é empacotado ou iniciado pelo Tauri. Exportação continua Canvas/download do WebView, sem acesso genérico ao filesystem; gravação nativa aprovada em teste isolado, com destino padrão do usuário ainda sujeito à conferência manual.
 - O frontend nunca comunica diretamente uma chave secreta a fornecedor externo.
 - Steam API key exclusiva no ambiente secreto do Worker.
 - Sessão e consultas de perfil verificam SteamID no backend (não confiar em SteamID passado no corpo da requisição).

@@ -1,12 +1,12 @@
 # Avisos de terceiros e revisão de licenças
 
-Revisão atualizada para a preparação do backend local, em 2026. Fonte: versões e metadados do [package-lock.json](package-lock.json), licenças instaladas pelo npm e referências indicadas abaixo. Foram acrescentados Hono, Wrangler e os tipos Workers; uma dependência transitiva Undici foi fixada em versão corrigida.
+Revisão atualizada para a integração desktop, em 2026. Fonte npm: [package-lock.json](package-lock.json) e licenças instaladas. Fonte Rust: [Cargo.lock](src-tauri/Cargo.lock) e metadados locais Cargo do alvo Windows x64, resolvidos/compilados com --locked. A CLI Tauri é somente ferramenta de desenvolvimento. Foi feito inventário básico das declarações Rust; reunir textos/NOTICE e cumprir obrigações de redistribuição nativa continua pendente antes de compartilhar binário/instalador.
 
 ## Escopo e conclusão
 
 A [licença MIT do projeto](LICENSE) cobre o código original do Steam Companion. Ela não substitui licenças, direitos autorais ou marcas dos fornecedores. Não foi identificado impedimento para aplicar MIT ao código original com as dependências atuais, preservando as obrigações de terceiros.
 
-As dependências de execução usam MIT e ISC. Ferramentas e dados de desenvolvimento usam também Apache-2.0, BSD/0BSD, BlueOak-1.0.0, MIT-0, CC-BY-4.0, CC0-1.0 e componentes LGPL-3.0-or-later do processamento de imagens local. As entradas do lockfile foram verificadas: todas declaram licença. Hono integra somente o bundle do Worker. As ferramentas não são incorporadas como aplicações ao bundle React/Worker; não se deve relicenciar seus arquivos ou bancos de dados como MIT.
+As dependências npm de execução usam MIT e ISC. Ferramentas e dados de desenvolvimento usam também Apache-2.0, BSD/0BSD, BlueOak-1.0.0, MIT-0, CC-BY-4.0, CC0-1.0 e componentes LGPL-3.0-or-later do processamento de imagens local. As entradas do lockfile npm foram verificadas: todas declaram licença. Hono integra somente o bundle do Worker. As ferramentas não são incorporadas como aplicações ao bundle React/Worker; não se deve relicenciar seus arquivos ou bancos de dados como MIT. O binário Tauri tem dependências Rust próprias; o inventário básico abaixo não conclui os avisos e obrigações de redistribuição nativa.
 
 Não há capas, fontes remotas, guias copiados ou dados Steam/lojas no protótipo. As formas das capas são desenhadas localmente e os jogos são fictícios. Os ícones Lucide são conteúdo de terceiros e estão atribuídos abaixo.
 
@@ -27,6 +27,7 @@ Ao redistribuir o código ou os arquivos web compilados, inclua este arquivo e L
 | Pacote | Versão | Licença declarada |
 | --- | --- | --- |
 | @cloudflare/workers-types | 5.20261026.1 | MIT OR Apache-2.0 |
+| @tauri-apps/cli | 2.12.4 | Apache-2.0 OR MIT |
 | @eslint/js | 10.0.1 | MIT |
 | @testing-library/jest-dom | 7.0.1 | MIT |
 | @testing-library/react | 16.3.3 | MIT |
@@ -55,6 +56,7 @@ Os números contam entradas, incluindo variantes opcionais de plataforma e vers�
 | --- | --- |
 | 0BSD | 1 |
 | Apache-2.0 | 37 |
+| Apache-2.0 OR MIT | 12 |
 | Apache-2.0 AND LGPL-3.0-or-later | 3 |
 | Apache-2.0 AND LGPL-3.0-or-later AND MIT | 1 |
 | BlueOak-1.0.0 | 4 |
@@ -69,6 +71,7 @@ Os números contam entradas, incluindo variantes opcionais de plataforma e vers�
 | MIT OR Apache-2.0 | 4 |
 
 - **Apache-2.0:** por exemplo TypeScript e componentes ESLint. Mantenha licença, avisos e NOTICE quando existirem ao redistribuir esses componentes. [Texto Apache](https://www.apache.org/licenses/LICENSE-2.0).
+- **Tauri:** CLI 2.12.4 e seus binários opcionais declaram Apache-2.0 OR MIT; textos em `node_modules/@tauri-apps/cli/LICENSE-*` e [fonte oficial](https://github.com/tauri-apps/tauri). O lockfile Rust fixa tauri 2.12.5, tauri-build 2.7.4 e wry 0.57.1 sob MIT/Apache-2.0; tao 0.37.2 declara Apache-2.0. Os metadados transitivos incluem também MIT, BSD, Zlib, Unicode-3.0 e MPL-2.0. cssparser 0.37.0, cssparser-macros 0.7.1, dtoa-short 0.3.5, option-ext 0.2.0 e selectors 0.38.0 declaram MPL-2.0: preserve as licenças e disponibilize os fontes cobertos conforme suas obrigações antes de redistribuir. Não foram modificadas crates de terceiros. O instalador local inclui LICENSE e este documento; isso não substitui reunir os textos/NOTICE nativos e os termos WebView2. O ícone geométrico original foi criado para este projeto, sem usar marca gráfica da Steam.
 - **BlueOak-1.0.0:** minimatch e versões aninhadas de lru-cache, usados no desenvolvimento. Ao redistribuí-los, preserve o texto ou o [link exigido pela licença Blue Oak](https://blueoakcouncil.org/license/1.0.0).
 - **CC-BY-4.0:** dados de caniuse-lite, versão 1.0.30001819, usados pelas ferramentas de compatibilidade. Fonte: [caniuse-lite](https://github.com/browserslist/caniuse-lite), com dados de [Can I use](https://caniuse.com/), sob [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Não foram modificados nesta revisão; atribuição e indicação de alterações são necessárias ao redistribuir/adaptar esses dados.
 - **CC0-1.0:** mdn-data, usado no desenvolvimento, mantém sua [dedicação CC0](https://creativecommons.org/publicdomain/zero/1.0/).

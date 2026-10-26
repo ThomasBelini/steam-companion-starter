@@ -6,6 +6,8 @@ Atualização posterior de integridade: [D1_INTEGRITY](D1_INTEGRITY.md) registra
 
 Atualização posterior do verificador: [OPENID_VERIFIER](OPENID_VERIFIER.md) registra validações e transporte isolados com dependências simuladas. É avanço parcial de R02, sem resolvedor de descoberta conectado ou consumo D1 atômico; não conclui R01/R02/R03 nem autoriza o primeiro login real.
 
+Atualização posterior do desktop: [DESKTOP](DESKTOP.md) registra Tauri 2 envolvendo somente o demo, sem permissões IPC, plugins ou autenticação. Build release, três testes Rust e conferência funcional/segurança no WebView2 foram aprovados; NSIS foi gerado sem instalação. As menções abaixo à ausência de Tauri descrevem a base original; armazenamento de sessão, retorno desktop e todos os gates de autenticação continuam pendentes.
+
 **Parecer: NÃO autorizar ainda a primeira autenticação real com emissão de sessão.** Há bloqueadores críticos de vínculo navegador/desktop, verificação OpenID e emissão atômica. O backend atual mantém autenticação desativada; os riscos abaixo descrevem principalmente o que poderá acontecer se as rotas forem habilitadas sem esses controles. Não constituem prova de exploração do protótipo bloqueado.
 
 A revisão original acrescentou somente este relatório, sem login, Tauri, migração, sessão, recurso remoto, deploy ou credenciais reais. Os reforços SQL posteriores estão documentados no adendo acima. As recomendações do fluxo de autenticação continuam propostas, não propriedades já comprovadas do sistema.

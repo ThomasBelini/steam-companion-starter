@@ -28,6 +28,7 @@ O [verificador isolado](OPENID_VERIFIER.md) acrescenta validação de asserção
 - Dados pessoais privados por padrão. Exportações de imagens não devem incluir SteamID sem escolha explícita.
 
 ## Distribuição
+- A estrutura desktop atual mantém zero permissões IPC e nenhum plugin/comando nativo de aplicação. CSP de produção não autoriza conexões de rede; a exceção de desenvolvimento é o Vite em loopback e seu HMR. Navegação externa/popups são negados no código Rust e foram conferidos no release Windows, junto ao bloqueio CSP de fetch externo; consulte [DESKTOP](DESKTOP.md) para alcance e limites. O verificador OpenID permanece exclusivamente no backend, sem importação pelo aplicativo.
 - GitHub secret scanning, Dependabot e revisão de dependências.
 - Inspecionar diff e alterações propostas por IA antes de cada commit.
 - Produzir SHA256 dos lançamentos. A ausência de certificado de assinatura Windows poderá causar aviso SmartScreen.

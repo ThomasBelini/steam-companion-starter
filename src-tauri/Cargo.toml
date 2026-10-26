@@ -1,0 +1,16 @@
+[package]
+name = "steam-companion"
+version = "0.1.0"
+description = "Steam Companion — protótipo demonstrativo Windows"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[build-dependencies]
+tauri-build = { version = "=2.7.4", features = [] }
+
+[dependencies]
+tauri = { version = "=2.12.5", features = [] }
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]

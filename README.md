@@ -14,6 +14,7 @@ Um aplicativo Windows para acompanhar a biblioteca Steam, guiar conquistas rumo 
 - Lista de desejos local (em memória, reinicia ao recarregar).
 - Exportação **real** de imagem PNG ou JPEG para um jogo demonstrativo via Canvas.
 - Tela de perfil com explicação sobre segurança (login real desabilitado).
+- Aplicativo Windows Tauri 2 com a mesma interface demonstrativa; build release e conferência funcional no WebView2 aprovados nesta máquina. Veja [DESKTOP](docs/DESKTOP.md).
 - Backend Hono/Workers local com `/health`, D1 emulado e migrações versionadas; separado da interface, sem autenticação habilitada.
 
 ### O que NÃO funciona (intencionalmente)
@@ -22,13 +23,13 @@ Um aplicativo Windows para acompanhar a biblioteca Steam, guiar conquistas rumo 
 - Banco de dados online;
 - Biblioteca, conquistas e preços reais;
 - Guias validados e recomendações automáticas;
-- Instalador Windows (Tauri será adicionado após a validação inicial).
+- Instalador Windows validado/distribuído e assinatura do executável.
 
 Não há formulário de senha, Steam Guard ou API key.
 
 ## Rodar no Windows pelo VS Code
 
-Requisitos: [Node.js 24](https://nodejs.org/) (mínimo 24.15, com npm) e um navegador. O projeto registra a versão principal em [.nvmrc](.nvmrc). [Git](https://git-scm.com/) é necessário para clonar/versionar; também é possível executar uma cópia extraída de ZIP. [VS Code](https://code.visualstudio.com/) é o editor recomendado. Rust, Tauri e credenciais Steam não são necessários para esta etapa.
+Para executar no navegador: [Node.js 24](https://nodejs.org/) (mínimo 24.15, com npm) e um navegador. O projeto registra a versão principal em [.nvmrc](.nvmrc). [Git](https://git-scm.com/) é necessário para clonar/versionar; também é possível executar uma cópia extraída de ZIP. [VS Code](https://code.visualstudio.com/) é o editor recomendado. O modo web não exige Rust ou credenciais Steam.
 
 Clone o repositório ou extraia o ZIP, abra a pasta no VS Code e use o terminal PowerShell na raiz, onde está o [package.json](package.json):
 
@@ -41,7 +42,30 @@ npm.cmd run dev
 
 `npm.cmd ci` instala as versões do lockfile. Nenhum arquivo `.env`, conta, token ou chave de API precisa ser configurado. O [.env.example](.env.example) contém somente um valor público vazio para referência futura.
 
-Abra o endereço local mostrado no terminal (geralmente `http://localhost:5173`). Encerre com `Ctrl+C`. Usar `npm.cmd` evita o bloqueio de `npm.ps1` por políticas do PowerShell, sem alterar a política de segurança do Windows. Em outros terminais, `npm` também pode ser usado.
+Abra `http://127.0.0.1:5173`. A porta é fixa: encerre outro Vite nessa porta antes de iniciar uma nova instância. Encerre com `Ctrl+C`. Usar `npm.cmd` evita o bloqueio de `npm.ps1` por políticas do PowerShell, sem alterar a política de segurança do Windows. Em outros terminais, `npm` também pode ser usado.
+
+### Abrir como aplicativo Windows (Tauri 2)
+
+Instale os [pré-requisitos oficiais](https://v2.tauri.app/start/prerequisites/#windows): Microsoft C++ Build Tools com **Desenvolvimento para desktop com C++**, MSVC x64/x86 e Windows SDK; Rust estável **MSVC** pelo [rustup](https://rustup.rs/); e WebView2 Evergreen. Depois reabra o VS Code. Nesta máquina, Rust/Cargo 1.99.1, MSVC/SDK e WebView2 foram reconhecidos e o build Windows passou.
+
+Na raiz do projeto, com esses pré-requisitos instalados:
+
+```powershell
+npm.cmd ci
+npm.cmd run desktop:info
+npm.cmd run desktop:dev
+```
+
+O último comando inicia o Vite e abre a janela; não execute `npm.cmd run dev` em paralelo na mesma porta. O backend é opcional e não é iniciado pelo desktop. O aplicativo continua com jogos, conquistas e preços fictícios, sem login. Não precisa de `.env`, conta Cloudflare ou chave Steam.
+
+Para compilar um executável local sem instalador:
+
+```powershell
+npm.cmd run desktop:build
+.\src-tauri\target\release\steam-companion.exe
+```
+
+O release abriu com o demo e gravou PNG/JPEG no WebView2 em teste isolado. `npm.cmd run desktop:bundle` também gerou NSIS, **sem executar o instalador**. Veja [DESKTOP](docs/DESKTOP.md) para instruções, resultados e testes manuais pendentes de destino padrão de downloads, instalação e compatibilidade. Nenhum desses comandos publica o aplicativo.
 
 ### Backend local opcional
 
@@ -88,9 +112,11 @@ O ESLint verifica JavaScript/TypeScript, regras de Hooks e React Refresh; avisos
 
 Para reexecutar testes durante a edição, use `npm.cmd run test:watch`. Para auditoria de vulnerabilidades conhecidas, use `npm.cmd audit`; essa consulta requer internet e não substitui revisão de segurança.
 
-Os testes de exportação simulam Canvas e download: validam a lógica, mas não comprovam pixels, codificação dos arquivos ou gravação real no Windows. A conferência manual PNG/JPEG no navegador e, futuramente, no WebView2 continua necessária.
+Os testes unitários de exportação simulam Canvas e download: validam a lógica, mas não comprovam pixels ou gravação real. A conferência adicional no WebView2 gravou PNG/JPEG em pasta isolada; o destino padrão dos downloads e os testes manuais restantes estão descritos em [DESKTOP](docs/DESKTOP.md).
 
-`npm.cmd run build` gera a interface estática em `dist/`. Para conferi-la localmente, execute `npm.cmd run preview` após o build e abra o endereço informado. **Ainda não há instalador Windows.** Tauri e integrações reais permanecem no [planejamento](docs/ROADMAP.md).
+As verificações de configuração desktop cobrem permissões, CSP, loopback e separação do backend. `npm.cmd run check` e a CI existente **não compilam Rust**. Com o toolchain instalado, execute também `npm.cmd run desktop:check` (formatação, compilação de tipos e três testes Rust das restrições de navegação/download) e `npm.cmd run desktop:build`. Ambos passaram nesta máquina; os comandos Cargo usam o lockfile versionado com --locked.
+
+`npm.cmd run build` gera a interface estática em `dist/`. Para conferi-la localmente, execute `npm.cmd run preview` após o build e abra o endereço informado. O Tauri usa esses mesmos arquivos. O instalador foi gerado, mas instalação/desinstalação ainda precisam de teste; integrações reais permanecem no [planejamento](docs/ROADMAP.md).
 
 ## GitHub Actions e custo zero
 
@@ -110,6 +136,7 @@ src/
   types.ts        Contratos de dados futuros
   styles.css      Layout
 tests/            Testes de interface, exportação e regras de publicação
+src-tauri/        Janela Windows, restrições nativas, capacidades e configuração Tauri 2
 .github/
   workflows/      Verificações em push e pull request (sem publicação)
 backend/
@@ -127,6 +154,7 @@ docs/
   AUDIT.md        Análise técnica inicial e limitações daquela etapa
   BACKEND.md      Execução local, migrações e verificações do Worker
   AUTHENTICATION.md Arquitetura proposta e bloqueadores para login real
+  DESKTOP.md      Pré-requisitos Windows, execução Tauri e limitações dos testes
 AGENTS.md         Regras fundamentais para alterações no projeto
 eslint.config.js  ESLint para React e TypeScript
 vitest.config.ts  Configuração dos testes
@@ -144,7 +172,7 @@ Antes de publicar manualmente, revise os arquivos, o diff e o histórico Git. N�
 
 A [análise técnica](docs/AUDIT.md) registra o estado da revisão inicial, suas verificações e limitações. O [plano de desenvolvimento](docs/ROADMAP.md) organiza as etapas propostas e seus critérios de aceite. Novas funcionalidades aguardam revisão desse planejamento.
 
-A análise é um registro da etapa anterior. A preparação de publicação acrescentou ESLint, testes automatizados e CI. Login Steam, banco online, consultas externas reais e instalador continuam fora desta etapa.
+A análise é um registro da etapa anterior. A base atual inclui ESLint, testes, CI, backend local e estrutura desktop Tauri. Login Steam, banco online, consultas externas reais e distribuição de instalador continuam pendentes.
 
 ### Preparação da biblioteca Steam
 

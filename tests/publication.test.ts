@@ -19,6 +19,7 @@ describe('arquivos permitidos na publicação', () => {
     'notes~', 'Thumbs.db', 'Desktop.ini',
     'backend/.dev.vars', 'backend/.dev.vars.local', 'backend/dist/index.js',
     'backend/.wrangler/state/local.sqlite',
+    'src-tauri/gen/schemas/desktop-schema.json', 'src-tauri/target/release/bundle/nsis/setup.exe',
   ])('exclui %s', path => {
     expect(rules.ignores(path)).toBe(true);
   });
@@ -29,6 +30,9 @@ describe('arquivos permitidos na publicação', () => {
     'src/App.tsx', 'src/exportImage.ts', 'tests/App.test.tsx',
     'backend/migrations/0001_initial.sql', 'docs/SECURITY.md', 'README.md',
     'backend/.dev.vars.example', 'backend/wrangler.jsonc', 'vitest.backend.config.ts',
+    'src-tauri/Cargo.toml', 'src-tauri/Cargo.lock', 'src-tauri/src/main.rs',
+    'src-tauri/tauri.conf.json', 'src-tauri/capabilities/main-demo.json',
+    'src-tauri/icons/icon.ico', 'src-tauri/icons/128x128.png', 'src-tauri/icons/source.svg',
   ])('preserva %s', path => {
     expect(rules.ignores(path)).toBe(false);
   });

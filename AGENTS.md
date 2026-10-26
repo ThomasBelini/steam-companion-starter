@@ -4,7 +4,7 @@
 - O projeto é um protótipo React + TypeScript com dados fictícios. Preserve os avisos de demonstração; não apresente login, preços, guias ou biblioteca como reais.
 - Custo adicional zero: nenhuma API paga, cobrança automática ou serviço pago obrigatório. Não publique, faça deploy ou envie código ao GitHub sem pedido explícito.
 - Nunca solicite ou inclua senhas, Steam Guard, cookies, chaves Steam, tokens ou dados privados. Somente valores públicos podem usar `VITE_*`; o demo não precisa de `.env`.
-- Backend local: Worker/Hono com D1 emulado e autenticação desativada. Login futuro: Steam OpenID no navegador externo, verificado no servidor, com sessões revogáveis e isolamento por usuário. Tauri e login real ainda não foram implementados.
+- Backend local: Worker/Hono com D1 emulado e autenticação desativada. Login futuro: Steam OpenID no navegador externo, verificado no servidor, com sessões revogáveis e isolamento por usuário. Tauri 2 envolve somente o demo; login real continua ausente. Consulte [DESKTOP](docs/DESKTOP.md) para pré-requisitos, comandos e validações nativas pendentes; não amplie capacidades/IPC sem necessidade comprovada.
 - Mantenha TypeScript estrito, dependências mínimas e lockfile atualizado. Separe regras e provedores da apresentação quando necessário; evite refatorações fora do escopo.
 - Testes devem exercitar comportamentos existentes com dados locais, sem rede ou credenciais. Não use raridade como dificuldade nem invente fonte, preço ou histórico.
 - Use Node 24 (mínimo 24.15) e `npm ci`. No PowerShell, prefira `npm.cmd` se a política de execução bloquear `npm.ps1`.
