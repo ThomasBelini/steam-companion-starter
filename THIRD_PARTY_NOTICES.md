@@ -21,6 +21,7 @@ Ao redistribuir o código ou os arquivos web compilados, inclua este arquivo e L
 | scheduler | 0.28.0 | MIT |
 | lucide-react | 0.468.0 | ISC |
 | hono | 4.13.14 | MIT |
+| @tauri-apps/api | 2.12.4 | Apache-2.0 OR MIT (opção MIT abaixo) |
 
 ## Ferramentas diretas de desenvolvimento
 
@@ -57,7 +58,7 @@ Os números contam entradas, incluindo variantes opcionais de plataforma e vers�
 | --- | --- |
 | 0BSD | 1 |
 | Apache-2.0 | 40 |
-| Apache-2.0 OR MIT | 12 |
+| Apache-2.0 OR MIT | 13 |
 | Apache-2.0 AND LGPL-3.0-or-later | 3 |
 | Apache-2.0 AND LGPL-3.0-or-later AND MIT | 1 |
 | BlueOak-1.0.0 | 4 |
@@ -83,7 +84,37 @@ Os números contam entradas, incluindo variantes opcionais de plataforma e vers�
 
 ## Laboratório nativo de pareamento — MIT OR Apache-2.0
 
-Nota do laboratório nativo de pareamento: a feature opt-in `pairing-prototype` usa base64 0.23.1, getrandom 0.3.4 e sha2 0.10.9 (já presentes no lockfile transitivo), mais zeroize 1.8.2. Todas declaram `MIT OR Apache-2.0` nos metadados Cargo locais. São usadas somente pelo exemplo separado; o binário Tauri normal não importa esses módulos. Preserve textos e avisos dessas crates se redistribuir o executável de laboratório. Fontes: [base64](https://github.com/marshallpierce/rust-base64), [getrandom](https://github.com/rust-random/getrandom), [SHA-2](https://github.com/RustCrypto/hashes), [zeroize](https://github.com/RustCrypto/utils/tree/master/zeroize). Nenhum código de terceiros foi modificado ou relicenciado; a pendência de reunir os avisos nativos completos antes de redistribuição permanece.
+Adendo: a demonstração Windows debug opt-in `desktop-pairing-demo` também reutiliza as crates listadas abaixo. O executável normal/release continua sem esses módulos.
+
+Nota do laboratório nativo de pareamento: a feature opt-in `pairing-prototype` usa base64 0.23.1, getrandom 0.3.4 e sha2 0.10.9 (já presentes no lockfile transitivo), mais zeroize 1.8.2. Todas declaram `MIT OR Apache-2.0` nos metadados Cargo locais. São usadas pelo exemplo separado e pela demonstração Windows debug opt-in; o binário Tauri normal não importa esses módulos. Preserve textos e avisos dessas crates se redistribuir o executável de laboratório. Fontes: [base64](https://github.com/marshallpierce/rust-base64), [getrandom](https://github.com/rust-random/getrandom), [SHA-2](https://github.com/RustCrypto/hashes), [zeroize](https://github.com/RustCrypto/utils/tree/master/zeroize). Nenhum código de terceiros foi modificado ou relicenciado; a pendência de reunir os avisos nativos completos antes de redistribuição permanece.
+
+## SDK JavaScript Tauri — opção MIT
+
+`@tauri-apps/api` 2.12.4 é incorporado ao frontend somente para a ponte oficial `invoke`/`isTauri`, sem plugin ou acesso nativo genérico. Texto preservado de `node_modules/@tauri-apps/api/LICENSE-MIT`:
+
+```text
+MIT License
+
+Copyright (c) 2017 - Present Tauri Apps Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
 ## React, React DOM e Scheduler — MIT
 

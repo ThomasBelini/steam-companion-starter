@@ -1,4 +1,4 @@
-//! A simulated authority, intentionally unavailable to Hono, D1 and the Tauri UI.
+//! Shared simulation only. No identity, session, OpenID, Worker or D1 access.
 use super::{
     crypto::{canonical, challenge, hash, random_secret},
     http::{fields, Request, Response, Server},
@@ -23,6 +23,12 @@ struct Grant {
     used: bool,
 }
 
+struct DesktopIntent {
+    approval: Zeroizing<String>,
+    requested: bool,
+    approved: bool,
+}
+
 pub struct MockAuthority {
     state: String,
     challenge: String,
@@ -33,6 +39,7 @@ pub struct MockAuthority {
     failures: u8,
     grant: Option<Grant>,
     cancelled: bool,
+    desktop: Option<DesktopIntent>,
 }
 
 impl MockAuthority {
@@ -94,12 +101,9 @@ impl MockAuthority {
         csrf: &str,
         approval: &str,
     ) -> Result<Zeroizing<String>, &'static str> {
-        if !self.live() || self.grant.is_some() {
-            return Err("attempt unavailable");
-        }
-        let binding = self.browser.as_ref().ok_or("no browser")?;
-        if cookie.map(hash) != Some(binding.cookie) || hash(csrf) != binding.csrf {
-            return Err("invalid browser context");
+        self.validate_browser(cookie, csrf)?;
+        if self.desktop.as_ref().is_some_and(|intent| !intent.approved) {
+            return Err("native intent required");
         }
         if hash(approval) != self.approval {
             self.failures += 1;
@@ -112,6 +116,17 @@ impl MockAuthority {
             used: false,
         });
         Ok(code)
+    }
+
+    fn validate_browser(&self, cookie: Option<&str>, csrf: &str) -> Result<(), &'static str> {
+        if !self.live() || self.grant.is_some() {
+            return Err("attempt unavailable");
+        }
+        let binding = self.browser.as_ref().ok_or("no browser")?;
+        if cookie.map(hash) != Some(binding.cookie) || hash(csrf) != binding.csrf {
+            return Err("invalid browser context");
+        }
+        Ok(())
     }
 
     fn handle(&mut self, request: Request, origin: &str) -> Response {
@@ -169,6 +184,9 @@ impl MockAuthority {
                     ),
                 ));
             }
+            if self.desktop.is_some() {
+                response.body = desktop_form(&self.state, &csrf, false);
+            }
             return response;
         }
         if request.method != "POST" || request.target != "/confirm" {
@@ -180,13 +198,33 @@ impl MockAuthority {
         {
             return Response::new(403, "Invalid laboratory origin.");
         }
-        let Some(values) = fields(&request.body, &["state", "csrf", "approval"]) else {
+        let expected: &[&str] = if self.desktop.is_some() {
+            &["state", "csrf"]
+        } else {
+            &["state", "csrf", "approval"]
+        };
+        let Some(values) = fields(&request.body, expected) else {
             return Response::new(400, "Invalid confirmation.");
         };
         if values["state"] != self.state {
             return Response::new(403, "Unknown laboratory attempt.");
         }
-        match self.confirm(cookie, &values["csrf"], &values["approval"]) {
+        let approval = if self.desktop.is_some() {
+            if self.validate_browser(cookie, &values["csrf"]).is_err() {
+                return Response::new(403, "Invalid browser context.");
+            }
+            let Some(intent) = self.desktop.as_mut() else {
+                return Response::new(503, "Laboratory unavailable.");
+            };
+            if !intent.approved {
+                intent.requested = true;
+                return Response::new(200, &desktop_form(&self.state, &values["csrf"], true));
+            }
+            Zeroizing::new(intent.approval.to_string())
+        } else {
+            Zeroizing::new(values["approval"].clone())
+        };
+        match self.confirm(cookie, &values["csrf"], &approval) {
             Ok(code) => {
                 // Explicit GET link avoids cross-origin POST redirects and keeps form-action self.
                 // Only the pre-bound loopback address is used; no redirect parameter exists.
@@ -202,6 +240,20 @@ impl MockAuthority {
     }
 }
 
+fn desktop_form(state: &str, csrf: &str, pending: bool) -> String {
+    let instruction = if pending {
+        "Volte ao Steam Companion e confirme a identidade fictícia. Depois clique em Gerar retorno simulado nesta página."
+    } else {
+        "Confirme somente a demonstração que você iniciou neste computador. A identidade será Piloto Demo (fictícia), sem vínculo com a Steam."
+    };
+    let label = if pending {
+        "Gerar retorno simulado"
+    } else {
+        "Confirmar demonstração fictícia"
+    };
+    format!("<!doctype html><html lang=\"pt-BR\"><meta charset=\"utf-8\"><title>Steam Companion — demonstração local</title><h1>Pareamento SIMULADO</h1><p>Sem login Steam, credenciais ou sessão. Nenhum dado privado é autorizado.</p><p>{instruction}</p><form action=\"/confirm\" method=\"post\"><input type=\"hidden\" name=\"state\" value=\"{state}\"><input type=\"hidden\" name=\"csrf\" value=\"{csrf}\"><button type=\"submit\">{label}</button></form></html>")
+}
+
 pub struct Lab {
     pub browser_url: String,
     // Separate, one-time intent confirmation, deliberately shown only by the lab CLI.
@@ -215,7 +267,22 @@ pub struct Lab {
 }
 
 impl Lab {
+    #[allow(
+        dead_code,
+        reason = "Standalone console entry point; the Tauri demo uses start_desktop."
+    )]
     pub fn start(lifetime: Duration) -> Result<Self, &'static str> {
+        Self::start_mode(lifetime, false)
+    }
+    #[cfg(feature = "desktop-pairing-demo")]
+    #[allow(
+        dead_code,
+        reason = "Shared native demo entry point, not called by the console example."
+    )]
+    pub fn start_desktop(lifetime: Duration) -> Result<Self, &'static str> {
+        Self::start_mode(lifetime, true)
+    }
+    fn start_mode(lifetime: Duration, desktop: bool) -> Result<Self, &'static str> {
         if lifetime.is_zero() || lifetime > Duration::from_secs(120) {
             return Err("invalid laboratory lifetime");
         }
@@ -238,6 +305,11 @@ impl Lab {
             failures: 0,
             grant: None,
             cancelled: false,
+            desktop: desktop.then(|| DesktopIntent {
+                approval: Zeroizing::new(approval.to_string()),
+                requested: false,
+                approved: false,
+            }),
         }));
         let stop = Arc::new(AtomicBool::new(false));
         let completed = Arc::new(AtomicBool::new(false));
@@ -291,6 +363,41 @@ impl Lab {
     }
     pub fn stopped(&self) -> bool {
         self.stop.load(Ordering::Acquire)
+    }
+    #[cfg(feature = "desktop-pairing-demo")]
+    #[allow(
+        dead_code,
+        reason = "Used by the native demo bridge, not by the console example."
+    )]
+    pub fn desktop_phase(&self) -> Result<&'static str, &'static str> {
+        let mock = self.authority.lock().map_err(|_| "unavailable")?;
+        let intent = mock.desktop.as_ref().ok_or("not desktop")?;
+        Ok(if !mock.live() {
+            "expired"
+        } else if intent.approved {
+            "return_pending"
+        } else if intent.requested {
+            "confirmation_required"
+        } else {
+            "waiting"
+        })
+    }
+    #[cfg(feature = "desktop-pairing-demo")]
+    #[allow(
+        dead_code,
+        reason = "Used by the native demo bridge, not by the console example."
+    )]
+    pub fn approve_desktop(&self) -> Result<(), &'static str> {
+        let mut mock = self.authority.lock().map_err(|_| "unavailable")?;
+        if !mock.live() || mock.grant.is_some() {
+            return Err("unavailable");
+        }
+        let intent = mock.desktop.as_mut().ok_or("not desktop")?;
+        if !intent.requested || intent.approved {
+            return Err("no pending confirmation");
+        }
+        intent.approved = true;
+        Ok(())
     }
     pub fn cancel(&self) {
         // Serialize cancellation with simulated redemption; no check-then-consume race.

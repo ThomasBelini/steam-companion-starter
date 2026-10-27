@@ -33,9 +33,12 @@
     "backend:dev": "wrangler dev --local --config backend/wrangler.jsonc --persist-to .wrangler/state",
     "backend:db:migrate": "wrangler d1 migrations apply DB --local --config backend/wrangler.jsonc --persist-to .wrangler/state",
     "backend:build": "wrangler deploy --dry-run --config backend/wrangler.jsonc --outdir dist/backend",
-    "test:backend": "vitest run --config vitest.backend.config.ts"
+    "test:backend": "vitest run --config vitest.backend.config.ts",
+    "desktop:demo": "tauri dev --features desktop-pairing-demo --config src-tauri/tauri.pairing-demo.conf.json",
+    "desktop:demo:test": "cargo test --manifest-path src-tauri/Cargo.toml --locked --features desktop-pairing-demo --bin steam-companion"
   },
   "dependencies": {
+    "@tauri-apps/api": "2.12.4",
     "hono": "^4.13.14",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",

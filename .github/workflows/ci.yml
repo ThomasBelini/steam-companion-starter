@@ -81,7 +81,10 @@ jobs:
         run: cargo test --manifest-path src-tauri/Cargo.toml --locked --features pairing-prototype --example pairing-lab
       - name: Executar Clippy no aplicativo e laboratório
         if: runner.os == 'Windows'
-        run: cargo clippy --manifest-path src-tauri/Cargo.toml --locked --all-targets --features pairing-prototype -- -D warnings
+        run: cargo clippy --manifest-path src-tauri/Cargo.toml --locked --all-targets --features desktop-pairing-demo -- -D warnings
+      - name: Testar ponte demonstrativa Windows sem abrir navegador
+        if: runner.os == 'Windows'
+        run: npm run desktop:demo:test
       - name: Salvar dependências Cargo somente no push da branch padrão
         if: >-
           runner.os == 'Windows' && github.event_name == 'push' &&

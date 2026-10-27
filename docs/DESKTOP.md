@@ -1,5 +1,7 @@
 # Desktop Windows — Tauri 2 demonstrativo
 
+**Adendo atual:** a [demonstração de pareamento na interface](DESKTOP_PAIRING_UI.md) está disponível somente por `npm.cmd run desktop:demo` em Windows debug. Reutiliza o laboratório, abre o navegador padrão e expõe quatro comandos IPC específicos com ACL local; não implementa Steam, sessões ou acesso privado. `desktop:dev`, `desktop:build` e `desktop:bundle` continuam sem a ponte. As afirmações históricas de zero IPC abaixo referem-se aos builds normais, não à configuração opt-in.
+
 Preparação posterior de segurança: [DESKTOP_PAIRING](DESKTOP_PAIRING.md) descreve o executável de laboratório separado, aberto por `npm.cmd run desktop:pairing` e testado por `npm.cmd run desktop:pairing:test`. Não aparece no aplicativo, não usa WebView2 para autenticação, não altera CSP/capabilities e não habilita login. Os resultados históricos abaixo não comprovam o protocolo futuro de autenticação.
 
 O Tauri envolve a interface React/Vite existente sem recriá-la. Biblioteca, conquistas, promoções, desejos e exportação continuam no modo demonstrativo. Não há login, backend iniciado pelo executável, Steam dentro do WebView, consultas externas ou serviço pago.

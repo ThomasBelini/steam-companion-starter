@@ -15,6 +15,7 @@ import { demoFavoriteAppIds } from './library/demoPresentation';
 import { GameDetail } from './game/GameDetail';
 import { DealsPage } from './commerce/DealsPage';
 import { WishlistPage } from './commerce/WishlistPage';
+import { PairingDemo } from './desktop/PairingDemo';
 
 type Page = 'library' | 'deals' | 'wishlist' | 'profile';
 type GameView = 'all' | 'pending' | 'done';
@@ -116,7 +117,7 @@ function App({ libraryProvider = defaultProvider }: { libraryProvider?: LibraryP
         /> : page === 'deals' ? <DealsPage deals={demoDeals} wishlist={wishlist} search={dealSearch} onSearch={setDealSearch} onToggle={toggleWishlist} />
           : page === 'wishlist' ? <WishlistPage deals={demoDeals} wishlist={wishlist} onRemove={toggleWishlist}
             onBrowse={() => { setDealSearch(''); goTo('deals'); }} onCompare={name => { setDealSearch(name); goTo('deals'); }} />
-          : <><div className="heading"><div><div className="eyebrow">SEGURANÇA EM PRIMEIRO LUGAR</div><h1>Minha conta</h1><p>A integração oficial Steam OpenID será feita somente após a validação no backend.</p></div></div><div className="profile-panel"><div className="profile-icon"><LockKeyhole size={36}/></div><h2>Nenhuma conta conectada</h2><p>Este protótipo não pede senha, código Steam Guard, chave da API ou cookies. O login real abrirá o site oficial da Steam no navegador e será verificado por um backend seguro.</p><div className="disabled-button" aria-disabled="true">Entrar com Steam — em desenvolvimento</div><span className="micro">Não existe autenticação fictícia nem credencial armazenada neste protótipo.</span></div></>}
+          : <><div className="heading"><div><div className="eyebrow">SEGURANÇA EM PRIMEIRO LUGAR</div><h1>Minha conta</h1><p>A integração oficial Steam OpenID será feita somente após a validação no backend.</p></div></div><div className="profile-panel"><div className="profile-icon"><LockKeyhole size={36}/></div><h2>Nenhuma conta conectada</h2><p>Este protótipo não pede senha, código Steam Guard, chave da API ou cookies. O login real abrirá o site oficial da Steam no navegador e será verificado por um backend seguro.</p><div className="disabled-button" aria-disabled="true">Entrar com Steam — em desenvolvimento</div><span className="micro">Nenhuma credencial é armazenada. A demonstração abaixo não autentica uma conta Steam.</span><PairingDemo /></div></>}
       </div>
     </main>
   </div>;

@@ -1,0 +1,18 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "app": {
+    "security": {
+      "capabilities": [
+        "main-demo",
+        {
+          "identifier": "pairing-demo",
+          "description": "Windows debug only: four argument-free simulated pairing commands for the local main window.",
+          "local": true,
+          "windows": ["main"],
+          "permissions": ["allow-pairing-demo-start", "allow-pairing-demo-status", "allow-pairing-demo-approve", "allow-pairing-demo-cancel"]
+        }
+      ],
+      "devCsp": "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' ws://127.0.0.1:5173 ipc: http://ipc.localhost; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'"
+    }
+  }
+}

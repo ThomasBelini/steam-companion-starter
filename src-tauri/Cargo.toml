@@ -25,3 +25,4 @@ zeroize = { version = "=1.8.2", optional = true }
 [features]
 custom-protocol = ["tauri/custom-protocol"]
 pairing-prototype = ["dep:base64", "dep:getrandom", "dep:sha2", "dep:zeroize"]
+desktop-pairing-demo = ["pairing-prototype"]

@@ -28,7 +28,7 @@ Um aplicativo Windows para acompanhar a biblioteca Steam, guiar conquistas rumo 
 
 Não há formulário de senha, Steam Guard ou API key.
 
-Há um [laboratório opt-in de pareamento desktop/navegador](docs/DESKTOP_PAIRING.md), executado separadamente com `npm.cmd run desktop:pairing`. Usa somente respostas simuladas e portas efêmeras de 127.0.0.1; não altera o aplicativo, não utiliza o Worker/D1 e não habilita autenticação Steam.
+Há um [laboratório opt-in de pareamento desktop/navegador](docs/DESKTOP_PAIRING.md), executado separadamente com `npm.cmd run desktop:pairing`. A [demonstração na interface Windows](docs/DESKTOP_PAIRING_UI.md) reutiliza seu mecanismo em **Windows debug**, com `npm.cmd run desktop:demo`: abra **Meu perfil → Iniciar demonstração**. Confirme no navegador, depois no aplicativo e conclua pelos dois botões de retorno no navegador. Usa somente **Piloto Demo (identidade fictícia)** e portas efêmeras de 127.0.0.1; não utiliza Worker/D1 ou Steam, nem cria sessão. O build normal/release não contém essa ponte; o modo web mostra a indisponibilidade sem invocar Rust.
 
 A [Fase 1 do redesenho visual](docs/VISUAL_DESIGN.md) abrange navegação e biblioteca, usando as capturas Library Home/Library Gamepage do SpaceTheme como referência. Os jogos recentes têm ordem ilustrativa, sem histórico Steam; dois favoritos de exemplo são restaurados ao reiniciar. A [Fase 2](docs/GAME_DETAIL_DESIGN.md) aplica a mesma identidade à página individual. Guias e recomendações continuam indisponíveis; não é necessário instalar Millennium.
 

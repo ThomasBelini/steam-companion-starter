@@ -1,5 +1,7 @@
 # Revisão de segurança — autenticação Steam planejada
 
+Adendo da integração demonstrativa: [DESKTOP_PAIRING_UI](DESKTOP_PAIRING_UI.md) registra a ponte Windows debug entre React e o simulador nativo, com aprovação local posterior ao POST válido no navegador. Apenas estados públicos atravessam quatro comandos com ACL; feature proibida em release. Isso não comprova intenção/conta/destino reais, proteção contra relay, backend HTTPS ou autorização privada. R01/R02/R03 e os gates permanecem bloqueados.
+
 Adendo de pareamento: [DESKTOP_PAIRING](DESKTOP_PAIRING.md) registra testes nativos/navegador locais com segredo S256 só no Rust, listener efêmero e códigos simulados. O laboratório separado não altera o binário Tauri normal, CSP/capabilities, Worker, OpenID ou D1. **R01 continua crítico:** confirmação nativa independente reduz o que se obtém só com um link, mas encaminhar também essa confirmação por engenharia social não foi resolvido. R02/R03 e os gates de login real continuam pendentes. Não considerar testes locais uma autorização para emissão de sessões.
 
 Data: 26/10/2026. Base inspecionada: commit `1f7111a07b51ec04cfb77747dea5bcb69edb3f64`.

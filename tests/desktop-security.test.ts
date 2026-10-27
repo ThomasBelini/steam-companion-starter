@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import config from '../src-tauri/tauri.conf.json';
 import capability from '../src-tauri/capabilities/main-demo.json';
 import viteConfig from '../vite.config';
+import demoConfig from '../src-tauri/tauri.pairing-demo.conf.json';
 
 function policy(text: string) {
   return Object.fromEntries(text.split(';').map(part => part.trim().split(/\s+/)).filter(([name]) => name)
@@ -60,5 +61,31 @@ describe('limites de segurança da configuração desktop', () => {
     expect(app).not.toMatch(/SteamOpenIdVerifier|SteamWebApi\.server|backend\//);
     expect(config.bundle).not.toHaveProperty('createUpdaterArtifacts');
     expect(config.bundle.windows.nsis.installMode).toBe('currentUser');
+  });
+
+  it('isola a ponte demonstrativa em feature Windows debug e quatro comandos com ACL', () => {
+    const main = readFileSync(new URL('../src-tauri/src/main.rs', import.meta.url), 'utf8');
+    const build = readFileSync(new URL('../src-tauri/build.rs', import.meta.url), 'utf8');
+    const cargo = readFileSync(new URL('../src-tauri/Cargo.toml', import.meta.url), 'utf8');
+    expect(main).toContain('not(all(debug_assertions, windows))');
+    expect(main).toContain('compile_error!');
+    expect(main).toContain('#[cfg(feature = "desktop-pairing-demo")]');
+    expect(cargo).toContain('desktop-pairing-demo = ["pairing-prototype"]');
+    expect(build).toContain('AppManifest::new().commands(');
+    expect(build).toContain('CARGO_FEATURE_DESKTOP_PAIRING_DEMO');
+    expect(build).toContain('std::env::var("PROFILE").as_deref() != Ok("debug")');
+    const capability = demoConfig.app.security.capabilities[1];
+    expect(capability).toMatchObject({ local: true, windows: ['main'], permissions: [
+      'allow-pairing-demo-start', 'allow-pairing-demo-status', 'allow-pairing-demo-approve', 'allow-pairing-demo-cancel',
+    ] });
+    expect(capability).not.toHaveProperty('remote');
+    const csp = policy(demoConfig.app.security.devCsp);
+    expect(csp['connect-src']).toEqual(["'self'", 'ws://127.0.0.1:5173', 'ipc:', 'http://ipc.localhost']);
+    expect(demoConfig.app.security).not.toHaveProperty('csp');
+    const scripts = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).scripts;
+    expect(scripts['desktop:demo']).toContain('--features desktop-pairing-demo');
+    for (const name of ['desktop:dev', 'desktop:build', 'desktop:bundle']) {
+      expect(scripts[name]).not.toContain('pairing');
+    }
   });
 });

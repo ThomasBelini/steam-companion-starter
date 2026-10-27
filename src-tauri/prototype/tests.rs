@@ -19,6 +19,7 @@ fn fixture() -> (MockAuthority, Zeroizing<String>, Zeroizing<String>) {
             failures: 0,
             grant: None,
             cancelled: false,
+            desktop: None,
         },
         verifier,
         approval,

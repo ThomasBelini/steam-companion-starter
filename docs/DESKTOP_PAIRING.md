@@ -1,5 +1,7 @@
 # Laboratório local de pareamento desktop/navegador
 
+**Evolução atual:** [DESKTOP_PAIRING_UI](DESKTOP_PAIRING_UI.md) documenta o reuso revisado deste mecanismo em uma configuração Windows debug opt-in. O console e seus 30 testes permanecem separados; o build normal continua excluindo o protocolo. Nesta configuração nova, a confirmação independente é uma ação explícita na janela do aplicativo após intenção validada no navegador, sem enviar o valor de confirmação ao React. As observações abaixo descrevem a revisão histórica do console; não aprovam produção ou login real.
+
 **Somente simulação opt-in. Não habilita login, não consulta Steam e não emite sessões.** Não importar este laboratório no Worker, no frontend ou no binário Tauri normal. A interface SpaceTheme, CSP, capabilities, IPC, navegação nativa, OpenID e migrações permanecem inalterados.
 
 ## Decisão e limites do escopo

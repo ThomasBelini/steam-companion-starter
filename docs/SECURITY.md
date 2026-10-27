@@ -1,5 +1,7 @@
 # Segurança — requisitos antes de convidar amigos
 
+**Demonstração desktop opt-in:** [DESKTOP_PAIRING_UI](DESKTOP_PAIRING_UI.md) descreve quatro comandos sem argumentos, ACL somente para conteúdo local da janela principal, segredo S256 em memória Rust e configuração Windows debug separada. A CSP/capability normal não mudou; apenas a configuração opt-in permite o transporte IPC. Nenhum segredo ou código é retornado à interface. Não concede identidade autenticada nem acesso privado; relay e cookies locais entre portas continuam bloqueando login real. As afirmações históricas de zero IPC abaixo dizem respeito ao executável normal.
+
 O [laboratório isolado de pareamento](DESKTOP_PAIRING.md) é opt-in e usa apenas códigos/respostas simulados, sem novas permissões Tauri ou rotas Worker. Seus testes de loopback, prova nativa e intenção não encerram o risco crítico de relay; não copiar cookie HTTP, parser de laboratório ou autoridade em memória para produção.
 
 **ALERTA:** existe backend local com Hono/Workers e D1 emulado, mas o protótipo não contém login ou autenticação operacional. As rotas de auth/dados privados permanecem bloqueadas; não deve ser representado como serviço autenticado. A especificação futura está em [AUTHENTICATION.md](AUTHENTICATION.md) e a execução local em [BACKEND.md](BACKEND.md).

@@ -1,0 +1,19 @@
+.pairing-demo {
+  margin-top: var(--sc-space-5);
+  padding: var(--sc-space-4);
+  border: var(--sc-border);
+  border-radius: var(--sc-radius);
+  background: var(--sc-panel);
+  text-align: left;
+}
+.pairing-demo h3 { margin: var(--sc-space-2) 0; font-size: 18px; font-weight: var(--sc-weight-heading); }
+.pairing-demo .eyebrow { color: var(--sc-muted); font-size: var(--sc-text-xs); letter-spacing: .08em; }
+.profile-panel .pairing-demo p { max-width: none; margin: var(--sc-space-3) 0; color: var(--sc-muted); font-size: var(--sc-text-sm); }
+.pairing-demo-actions { display: flex; flex-wrap: wrap; gap: var(--sc-space-2); }
+.pairing-demo-actions button { white-space: normal; min-height: 40px; }
+.pairing-demo-actions .primary, .pairing-demo-actions .secondary {
+  background: var(--sc-raised); color: var(--sc-text); border: var(--sc-border);
+  border-radius: var(--sc-radius); padding: 10px 14px; font: inherit; font-size: var(--sc-text-sm); font-weight: var(--sc-weight-label);
+}
+.pairing-demo-actions button:hover:not(:disabled) { background: var(--sc-hover); border-color: var(--sc-line-strong); }
+.pairing-demo-actions button:disabled { opacity: .65; cursor: not-allowed; }
