@@ -7,7 +7,7 @@ export function migrationStatements(number: number): string[] {
   return unstable_splitSqlQuery(readFileSync(`backend/migrations/${file}`, 'utf8'));
 }
 
-export async function database(through = 6) {
+export async function database(through = 7) {
   const proxy = await getPlatformProxy<Bindings>({
     configPath: 'backend/tests/wrangler.test.json', persist: false, remoteBindings: false, envFiles: [],
   });

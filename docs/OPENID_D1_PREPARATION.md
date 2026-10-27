@@ -1,5 +1,7 @@
 # Preparação OpenID + D1 — sem login operacional
 
+Evolução posterior: o [protocolo interno simulado](SIMULATED_AUTH_PROTOCOL.md) exercita aprovação/código/consumo em três tabelas exclusivas da migração 0007. Reutiliza o hash deste módulo e os contratos S256 revisados, preservando o verificador e as tabelas 0006. Não liga o checkpoint real à emissão, não conecta o Tauri ao D1 e não habilita rotas. Os resultados históricos abaixo descrevem somente a preparação 0006.
+
 Esta etapa integra módulos internos, com identidades sintéticas e transporte simulado. Não abre rotas, inicia autenticação, gera códigos, cria usuários ou emite sessões. O [Worker](../backend/src/index.ts) permanece inalterado: `/auth/*` retorna 501 e `/api/*` retorna 401, mesmo com asserções/sessões sintéticas no banco. Não há flag para habilitar um bypass.
 
 ## Base reaproveitada

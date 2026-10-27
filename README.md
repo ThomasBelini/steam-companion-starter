@@ -200,6 +200,8 @@ A [camada de integração Steam](docs/STEAM_LIBRARY.md) agora inclui contratos, 
 
 ### Preparação do backend e autenticação
 
+O [protocolo interno simulado](docs/SIMULATED_AUTH_PROTOCOL.md) acrescenta testes D1 de tentativa, identidade fictícia, aprovação nativa, código único, cancelamento e consumo atômico, em tabelas isoladas da migração 0007. Não se conecta à demonstração Tauri, não abre rotas ou emite sessões. O vínculo HTTPS e a resistência a relay continuam bloqueadores do login real.
+
 O Worker local usa Hono e binding D1 emulado, com migrações para revisar o esquema original e preparar sessões, tentativas, nonces e códigos desktop. Essas tabelas não habilitam login ou acesso privado. [AUTHENTICATION](docs/AUTHENTICATION.md) define a proposta OpenID 2.0, retorno Tauri com prova de posse, sessões revogáveis, CSRF e isolamento, além dos requisitos que ainda precisam ser comprovados. Não foram criados serviços remotos nem configurados segredos reais.
 
 A [preparação OpenID/D1](docs/OPENID_D1_PREPARATION.md) compõe o verificador com contexto de tentativa, registro atômico de asserção/nonce e consulta estrita de proveniência. Os testes usam D1 emulado e Steam simulada; as rotas permanecem bloqueadas, sem emissão de sessões ou conexão do aplicativo. Descoberta real, pareamento, retenção e fluxo completo continuam como bloqueadores.

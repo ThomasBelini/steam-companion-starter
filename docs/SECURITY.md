@@ -1,5 +1,7 @@
 # Segurança — requisitos antes de convidar amigos
 
+**Laboratório interno D1:** [SIMULATED_AUTH_PROTOCOL](SIMULATED_AUTH_PROTOCOL.md) mantém identidades e códigos fictícios em tabelas separadas da migração 0007, fora do grafo do Worker e sem sessão. Testes locais incluem concorrência/rollback e expõem o limite de relay quando todo o contexto é encaminhado e aprovado. Isso não protege automaticamente o navegador real nem autoriza autenticação HTTPS/Steam.
+
 **Demonstração desktop opt-in:** [DESKTOP_PAIRING_UI](DESKTOP_PAIRING_UI.md) descreve quatro comandos sem argumentos, ACL somente para conteúdo local da janela principal, segredo S256 em memória Rust e configuração Windows debug separada. A CSP/capability normal não mudou; apenas a configuração opt-in permite o transporte IPC. Nenhum segredo ou código é retornado à interface. Não concede identidade autenticada nem acesso privado; relay e cookies locais entre portas continuam bloqueando login real. As afirmações históricas de zero IPC abaixo dizem respeito ao executável normal.
 
 O [laboratório isolado de pareamento](DESKTOP_PAIRING.md) é opt-in e usa apenas códigos/respostas simulados, sem novas permissões Tauri ou rotas Worker. Seus testes de loopback, prova nativa e intenção não encerram o risco crítico de relay; não copiar cookie HTTP, parser de laboratório ou autoridade em memória para produção.

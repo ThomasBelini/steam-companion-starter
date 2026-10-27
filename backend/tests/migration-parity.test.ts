@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { expect, it } from 'vitest';
 import { getPlatformProxy, type PlatformProxy } from 'wrangler';
-import { migrationStatements } from './d1';
+import { database, migrationStatements } from './d1';
 import type { Bindings } from '../src/bindings';
 import { inspectSessionProvenance } from '../src/auth/D1SessionProvenance.server';
 
@@ -58,7 +58,7 @@ async function rejectNul(db: D1Database) {
     .bind('f'.repeat(64) + '\0suffix', now, now + 600).run()).rejects.toThrow('Invalid nonce hash representation');
 }
 
-it('0001–0006 limpo e upgrade 0005→0006 têm schema idêntico, preservam dados e negam legado/NUL', async () => {
+it('0001–0007 limpo e upgrade 0005→0006→0007 têm schema idêntico, preservam dados e negam legado/NUL', async () => {
   const root = mkdtempSync(join(tmpdir(), 'steam-companion-migration-'));
   const safeRoot = resolve(root);
   if (!safeRoot.startsWith(resolve(tmpdir()) + sep) || !basename(safeRoot).startsWith('steam-companion-migration-')) throw new Error('Unsafe temporary cleanup target');
@@ -112,6 +112,12 @@ it('0001–0006 limpo e upgrade 0005→0006 têm schema idêntico, preservam dad
     expect(await schema(upgrade)).toEqual(freshSchema);
     const guards = freshSchema.objects.filter(object => String(object.name).endsWith('_hash_bytes_guard')).map(object => object.name).sort();
     expect(guards).toEqual(['assertion_hash_bytes_guard', 'context_hash_bytes_guard', 'nonce_hash_bytes_guard']);
+    // A 0007 só acrescenta tabelas/guards simulados. Esquema e linhas reais permanecem intactos.
+    for (const db of [fresh, upgrade]) await migrate(db, 7, 7);
+    const finalSchema = await schema(fresh);
+    expect(await schema(upgrade)).toEqual(finalSchema);
+    expect(finalSchema.objects.filter(object => !String(object.tbl_name).startsWith('simulation_'))).toEqual(freshSchema.objects);
+    expect(await snapshot(upgrade)).toEqual(before);
     for (const db of [fresh, upgrade]) {
       expect((await db.prepare('PRAGMA quick_check').first())?.quick_check).toBe('ok');
       expect((await db.prepare('PRAGMA foreign_key_check').all()).results).toEqual([]);
@@ -124,8 +130,8 @@ it('0001–0006 limpo e upgrade 0005→0006 têm schema idêntico, preservam dad
     for (const [id, channel] of [[3, 'desktop'], [12, 'desktop'], [21, 'web'], [31, 'web']] as const) {
       expect(await inspectSessionProvenance(upgrade, hash(id), channel)).toEqual({ ok: false, error: 'rejected' });
     }
-    report = { migrationParity: 'passed', schemaSha256: createHash('sha256').update(JSON.stringify(freshSchema)).digest('hex'),
-      tables: freshSchema.metadata.length, triggers: freshSchema.objects.filter(object => object.type === 'trigger').length,
+    report = { migrationParity: 'passed', through: '0007', schemaSha256: createHash('sha256').update(JSON.stringify(finalSchema)).digest('hex'),
+      tables: finalSchema.metadata.length, triggers: finalSchema.objects.filter(object => object.type === 'trigger').length,
       preservedRows: before.reduce((sum, table) => sum + table.rows.length, 0), rejectedExistingSessions: 4, nulGuards: guards.length,
       fresh: { quickCheck: 'ok', foreignKeyViolations: 0 }, upgrade: { quickCheck: 'ok', foreignKeyViolations: 0 } };
   } finally {
@@ -133,4 +139,24 @@ it('0001–0006 limpo e upgrade 0005→0006 têm schema idêntico, preservam dad
     rmSync(safeRoot, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   }
   console.info(JSON.stringify(report));
+});
+
+it('falha intermediária na 0007 reverte novas estruturas e preserva dados da 0006', async () => {
+  const proxy = await database(6);
+  try {
+    const db = proxy.env.DB;
+    await db.prepare('INSERT INTO users (steam_id) VALUES (?)').bind(alice).run();
+    const before = await snapshot(db);
+    // Colisão no terceiro CREATE TABLE para falhar após escritas anteriores no mesmo batch.
+    await db.prepare('CREATE TABLE simulation_grants (sentinel TEXT)').run();
+    const beforeSchema = await schema(db);
+    await expect(migrate(db, 7, 7)).rejects.toThrow();
+    expect(await schema(db)).toEqual(beforeSchema);
+    expect(await snapshot(db)).toEqual(before);
+    await db.prepare('DROP TABLE simulation_grants').run();
+    await migrate(db, 7, 7);
+    expect(await snapshot(db)).toEqual(before);
+    expect((await db.prepare('PRAGMA quick_check').first())?.quick_check).toBe('ok');
+    expect((await db.prepare('PRAGMA foreign_key_check').all()).results).toEqual([]);
+  } finally { await proxy.dispose(); }
 });

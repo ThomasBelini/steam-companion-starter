@@ -1,5 +1,7 @@
 # Integridade D1 — revisão e migração 0005
 
+Evolução posterior: a [migração 0007 / protocolo simulado](SIMULATED_AUTH_PROTOCOL.md) acrescenta tabelas demo separadas, sem reescrever 0001–0006 ou alterar a política de sessões. O teste de paridade foi ampliado até 0007, preservando as verificações de legado/NUL e dados anteriores. Nenhuma evidência simulada é gravada como OpenID real.
+
 Esta etapa reforça somente o esquema e os testes locais. **Não existe login OpenID, emissão HTTP de sessões, autorização privada ou deploy.** `integrity_version = 1` significa que a linha foi criada sob as novas regras SQL; não comprova autenticação Steam ou consentimento.
 
 ## Problemas confirmados e hipóteses ajustadas

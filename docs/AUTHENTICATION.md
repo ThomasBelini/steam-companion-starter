@@ -1,5 +1,7 @@
 # Arquitetura de autenticação Steam — proposta, ainda desativada
 
+Adendo interno: o [protocolo simulado D1](SIMULATED_AUTH_PROTOCOL.md) modela tentativa, identidade fictícia, aprovação nativa, código e consumo atômico em tabelas exclusivas da migração 0007. Não grava evidência OpenID, não é importado pelo Worker/Tauri e não emite sessão. O provisionamento do vínculo do navegador é simulado; HTTPS, relay e os gates abaixo continuam pendentes.
+
 Adendo da interface: [DESKTOP_PAIRING_UI](DESKTOP_PAIRING_UI.md) acrescenta exclusivamente uma demonstração Windows debug com identidade fictícia, confirmação no navegador e no aplicativo e estados públicos por IPC mínimo. Não chama OpenID/D1, não emite sessão e não autoriza dados privados. O build release rejeita a feature. O vínculo de conta/destino real, relay e cookies locais continuam bloqueadores.
 
 Adendo de pareamento: o [laboratório desktop/navegador](DESKTOP_PAIRING.md) exercita S256 nativo, listener loopback efêmero, confirmação independente, cookie/CSRF e código simulado de uso único. É um executável de laboratório opt-in, sem IPC, OpenID, Worker, D1 ou sessões. Não resolve por si só o risco crítico de relay R01 nem autoriza login real; o fluxo completo abaixo continua proposto.

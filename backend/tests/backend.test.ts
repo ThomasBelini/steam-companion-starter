@@ -116,10 +116,11 @@ describe('rotas do backend local', () => {
 });
 
 describe('migrações versionadas no D1 emulado', () => {
-  it('cria as onze tabelas, mantém privacidade padrão e ativa chaves estrangeiras', async () => {
+  it('cria as tabelas reais e simuladas separadas, mantém privacidade padrão e ativa chaves estrangeiras', async () => {
     const tables = await proxy.env.DB.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' ORDER BY name").all<{ name: string }>();
     expect(tables.results.map(row => row.name)).toEqual([
-      'auth_attempt_contexts', 'auth_attempts', 'desktop_grants', 'openid_nonces', 'session_origins', 'sessions', 'user_goals', 'user_settings', 'user_wishlist', 'users', 'verified_openid_assertions',
+      'auth_attempt_contexts', 'auth_attempts', 'desktop_grants', 'openid_nonces', 'session_origins', 'sessions',
+      'simulation_assertions', 'simulation_attempts', 'simulation_grants', 'user_goals', 'user_settings', 'user_wishlist', 'users', 'verified_openid_assertions',
     ]);
     expect((await proxy.env.DB.prepare('SELECT profile_visibility FROM users WHERE steam_id = ?').bind(userA).first<{ profile_visibility: string }>())?.profile_visibility).toBe('private');
     expect((await proxy.env.DB.prepare('PRAGMA foreign_keys').first<{ foreign_keys: number }>())?.foreign_keys).toBe(1);
