@@ -9,11 +9,43 @@ for (const width of [375, 960, 1280]) {
     await expect(page.getByRole('button', { name: 'Iniciar demonstração' })).toBeDisabled();
     await expect(page.getByRole('status')).toContainText('Demonstração nativa indisponível');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.keyboard.press('Tab');
-    await page.getByRole('button', { name: 'Minha biblioteca', exact: true }).click();
+    const library = page.getByRole('button', { name: 'Minha biblioteca', exact: true });
+    await library.focus();
+    await expect(library).toBeFocused();
+    await page.keyboard.press('Enter');
     await expect(page.getByRole('heading', { name: 'Minha biblioteca' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Minha biblioteca' })).toBeFocused();
   });
 }
+
+test('skip-link em 375px: foco visível, salto ao conteúdo e retorno à biblioteca por teclado', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 900 });
+  await page.goto('/');
+  // Métricas mais largas exercitam a sobreposição sem depender de fontes do sistema.
+  // O skip-link deve continuar visível quando focado; não clicar através dele.
+  await page.addStyleTag({ content: ':root { --sc-font: monospace; }' });
+  const skip = page.getByRole('link', { name: 'Pular para o conteúdo' });
+  await expect(skip).not.toBeInViewport();
+  await page.keyboard.press('Tab');
+  await expect(skip).toBeFocused();
+  await expect(skip).toBeInViewport();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('main')).toBeFocused();
+  await expect(page).toHaveURL(/#main-content$/);
+  await expect(skip).not.toBeInViewport();
+
+  await page.getByRole('button', { name: 'Meu perfil', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: 'Minha conta' })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(skip).toBeFocused();
+  await expect(skip).toBeInViewport();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Minha biblioteca', exact: true })).toBeFocused();
+  await expect(skip).not.toBeInViewport();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: 'Minha biblioteca' })).toBeFocused();
+});
 
 test('estados simulados de IPC: Enter inicia e Espaço cancela sem expor segredos', async ({ page }) => {
   // UI contract only: does not execute Rust or prove native security.
