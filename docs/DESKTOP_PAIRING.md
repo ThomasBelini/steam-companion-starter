@@ -98,6 +98,30 @@ npm.cmd run desktop:build
 
 O teste de navegador usa Edge no Windows, tal como a suíte Playwright existente; no Linux requer Chromium do Playwright (`npx playwright install chromium`). Não baixa navegador durante o teste. O runner inicia somente os executáveis locais de laboratório; o frontend continua sem shell/IPC.
 
+## Cobertura do GitHub Actions
+
+Antes desta alteração, o [workflow](../.github/workflows/ci.yml) não executava Cargo. Agora preserva a matriz Ubuntu/Windows, Node 24, TypeScript, ESLint, migrações D1 locais, testes gerais/backend, 39 testes Playwright da interface e builds web/Worker dry-run. O job continua restrito a repositório público, com `contents: read`, checkout sem credenciais persistidas, actions fixadas por SHA, sem secrets/deploy ou artefatos de aplicação.
+
+Somente no Windows, depois do build web, prepara Rust estável MSVC com rustfmt/Clippy e executa:
+
+```powershell
+npm.cmd run desktop:check
+cargo test --manifest-path src-tauri/Cargo.toml --locked --features pairing-prototype --example pairing-lab
+cargo clippy --manifest-path src-tauri/Cargo.toml --locked --all-targets --features pairing-prototype -- -D warnings
+```
+
+Isso cobre os **3 testes Rust do aplicativo e 30 do laboratório**, incluindo sockets locais, expiração, cancelamento, concorrência e regressões da revisão adversarial. Compila o código para testes; não executa o CLI de pareamento, abre navegador ou emite sessões. Rust/Tauri não foi adicionado ao Ubuntu: o alvo do aplicativo é Windows e esta etapa não instala o conjunto GTK/WebKit de um desktop Linux.
+
+**Continuam locais:** os cinco cenários de `desktop:pairing:test` que iniciam executáveis independentes e Edge externo, os testes manuais de navegador padrão/WebView2 e o build release/instalador Windows. A CI chama diretamente `cargo test` para não arrastar o runner de navegador desse script. A suíte Playwright da interface permanece na matriz (Edge headless no Windows e Chromium preparado no Ubuntu); isso não garante o contrato de processos/loopback/diagnósticos exigido pelos cinco cenários do laboratório. Não declarar esses cenários cobertos pelo GitHub enquanto não existir preparação específica e prova remota de seus pré-requisitos. Nenhum teste existente da interface foi desativado.
+
+O Windows tem **60 minutos** para acomodar compilação fria Rust/MSVC; Ubuntu mantém **30 minutos** para as dependências do Chromium. Não há promessa de duração antes da primeira execução no GitHub; acompanhar essa execução manualmente autorizada, sem remover testes se houver falha de instalação/timeout.
+
+O cache usa `actions/cache/restore` e `save` oficiais fixados no mesmo SHA (v5.1.0). Guarda somente `~/.cargo/registry/index` e `~/.cargo/registry/cache`, com chave por SO/arquitetura e hash do lockfile/workflow. Não guarda sources extraídos, `target`, binários, `.cargo` inteiro, tokens, `.env`, dados D1 ou perfis Edge; não usa restore-keys genéricas ou arquivos entre SOs. PRs não executam o passo de gravação; só push bem-sucedido na branch padrão pode salvar um cache ausente. Ausência de cache não pula compilação/testes. O download de cada segmento tem limite de 5 minutos; não alteramos cota/configurações remotas de armazenamento nem habilitamos cobrança adicional. O teto gratuito padrão deve ser mantido.
+
+Referências: [imagem Windows hospedada — ferramentas](https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md), [Tauri em GitHub Actions](https://v2.tauri.app/distribute/pipelines/github/), [action oficial de cache](https://github.com/actions/cache/tree/caa296126883cff596d87d8935842f9db880ef25), [segurança e limites de cache](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching). Essas referências não substituem a execução do workflow alterado; validação local não comprova runner hospedado, cache miss/hit remoto ou duração da compilação fria.
+
+Validação local desta alteração de CI: actionlint 1.7.12 aprovado, incluindo sintaxe/expressões; comparação com o workflow anterior confirmou preservação da matriz, permissões, triggers e todos os passos existentes. `npm.cmd run check` aprovou os 522 testes e builds web/Worker; `desktop:check` aprovou os 3 testes Rust; a chamada Cargo isolada aprovou os 30 testes do laboratório; Clippy com `-D warnings` e `git diff --check` passaram. O check usou cópia temporária dos arquivos atuais e estado D1 novo, preservando o banco local original. Não foram reexecutados os cinco cenários Edge do laboratório ou build release nesta alteração, e nenhuma execução remota/cache do GitHub foi iniciada.
+
 ## Evidências e gate seguinte
 
 Os [testes Rust](../src-tauri/prototype/tests.rs) combinam regras simuladas com sockets 127.0.0.1 reais; o [teste de navegador](../scripts/test-pairing-browser.mjs) dirige o Edge externo e executáveis nativos reais. Não há conta real, HTTPS, OpenID, Worker ou D1 no protocolo do laboratório.

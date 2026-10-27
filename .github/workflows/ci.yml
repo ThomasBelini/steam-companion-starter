@@ -21,7 +21,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    # A primeira compilação Rust/MSVC é mais lenta; Ubuntu mantém a margem do Chromium.
+    timeout-minutes: ${{ matrix.os == 'windows-latest' && 60 || 30 }}
     steps:
       - name: Obter código
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -51,3 +52,45 @@ jobs:
         run: npm run build
       - name: Compilar Worker sem deploy
         run: npm run backend:build
+      - name: Preparar Rust estável MSVC no Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          rustup toolchain install stable-x86_64-pc-windows-msvc --profile minimal --component rustfmt,clippy --no-self-update
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustup default stable-x86_64-pc-windows-msvc
+      - name: Restaurar dependências públicas do Cargo
+        if: runner.os == 'Windows'
+        id: cargo-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
+        with:
+          # Não inclui ~/.cargo inteiro, sources extraídos, target, credenciais ou bancos locais.
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-registry-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('src-tauri/Cargo.lock', '.github/workflows/ci.yml') }}
+          enableCrossOsArchive: false
+      - name: Verificar Rust do aplicativo Windows
+        if: runner.os == 'Windows'
+        run: npm run desktop:check
+      - name: Testar laboratório Rust isolado sem navegador
+        if: runner.os == 'Windows'
+        # desktop:pairing:test também inicia Edge/processos; esses cinco cenários continuam locais.
+        run: cargo test --manifest-path src-tauri/Cargo.toml --locked --features pairing-prototype --example pairing-lab
+      - name: Executar Clippy no aplicativo e laboratório
+        if: runner.os == 'Windows'
+        run: cargo clippy --manifest-path src-tauri/Cargo.toml --locked --all-targets --features pairing-prototype -- -D warnings
+      - name: Salvar dependências Cargo somente no push da branch padrão
+        if: >-
+          runner.os == 'Windows' && github.event_name == 'push' &&
+          github.ref == format('refs/heads/{0}', github.event.repository.default_branch) &&
+          steps.cargo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: ${{ steps.cargo-cache.outputs.cache-primary-key }}
+          enableCrossOsArchive: false

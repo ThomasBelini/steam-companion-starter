@@ -73,7 +73,7 @@ Foi gerado `src-tauri/target/release/bundle/nsis/Steam Companion_0.1.0_x64-setup
 
 ## Verificações aprovadas
 
-`npm.cmd run check` continua verificando frontend e backend, incluindo testes de configuração desktop e regras de publicação. **Não executa Cargo nem comprova janela nativa.** A CI existente mantém o mesmo escopo; não foi adicionado job de release/deploy.
+`npm.cmd run check` continua verificando frontend e backend, incluindo testes de configuração desktop e regras de publicação. **Não executa Cargo nem comprova janela nativa.** A CI agora acrescenta no job Windows `desktop:check`, os 30 testes Rust do laboratório isolado e Clippy com avisos como erros; veja [DESKTOP_PAIRING](DESKTOP_PAIRING.md). Não abre janela, não executa os cinco cenários Edge/processos do laboratório e não gera release/instalador ou deploy. Os resultados históricos abaixo descrevem verificações locais, não uma execução remota da CI nova.
 
 | Verificação | Resultado nesta máquina |
 | --- | --- |
