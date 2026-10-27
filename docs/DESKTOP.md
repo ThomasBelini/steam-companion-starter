@@ -1,5 +1,7 @@
 # Desktop Windows — Tauri 2 demonstrativo
 
+Preparação posterior de segurança: [DESKTOP_PAIRING](DESKTOP_PAIRING.md) descreve o executável de laboratório separado, aberto por `npm.cmd run desktop:pairing` e testado por `npm.cmd run desktop:pairing:test`. Não aparece no aplicativo, não usa WebView2 para autenticação, não altera CSP/capabilities e não habilita login. Os resultados históricos abaixo não comprovam o protocolo futuro de autenticação.
+
 O Tauri envolve a interface React/Vite existente sem recriá-la. Biblioteca, conquistas, promoções, desejos e exportação continuam no modo demonstrativo. Não há login, backend iniciado pelo executável, Steam dentro do WebView, consultas externas ou serviço pago.
 
 Evolução posterior: a [Fase 1 visual](VISUAL_DESIGN.md) redesenha somente biblioteca e navegação; registra 406 testes npm, novo build release e conferência no WebView2, sem alterar Rust, CSP ou capacidades. Os resultados de integração descritos abaixo são da etapa anterior e não aprovam a instalação ou novas funcionalidades.

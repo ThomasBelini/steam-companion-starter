@@ -1,5 +1,7 @@
 # Revisão de segurança — autenticação Steam planejada
 
+Adendo de pareamento: [DESKTOP_PAIRING](DESKTOP_PAIRING.md) registra testes nativos/navegador locais com segredo S256 só no Rust, listener efêmero e códigos simulados. O laboratório separado não altera o binário Tauri normal, CSP/capabilities, Worker, OpenID ou D1. **R01 continua crítico:** confirmação nativa independente reduz o que se obtém só com um link, mas encaminhar também essa confirmação por engenharia social não foi resolvido. R02/R03 e os gates de login real continuam pendentes. Não considerar testes locais uma autorização para emissão de sessões.
+
 Data: 26/10/2026. Base inspecionada: commit `1f7111a07b51ec04cfb77747dea5bcb69edb3f64`.
 
 Atualização posterior de integridade: [D1_INTEGRITY](D1_INTEGRITY.md) registra a migração 0005 e suas provas locais. As constatações abaixo descrevem a base original; R03 teve correções estruturais parciais, mas seus testes HTTP/protocolo e os gates continuam pendentes. R01/R02 permanecem críticos.

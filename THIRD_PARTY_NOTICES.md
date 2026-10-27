@@ -81,6 +81,10 @@ Os números contam entradas, incluindo variantes opcionais de plataforma e vers�
 - **MIT OR Apache-2.0:** ferramentas Cloudflare e tipos Workers oferecem alternativa de licença. Preserve os textos/avisos do componente caso suas ferramentas sejam redistribuídas. Fontes: [workers-sdk](https://github.com/cloudflare/workers-sdk) e [workerd](https://github.com/cloudflare/workerd).
 - **LGPL-3.0-or-later e expressões AND:** Wrangler/Miniflare incluem Sharp e binários opcionais de libvips para emulação local. Os dez pacotes `@img/sharp-libvips-*` usam LGPL; as quatro variantes Sharp Windows/Wasm combinam licenças. Não integram o código ou bundle do aplicativo nesta etapa. Não redistribuímos esses binários: `npm ci` os obtém dos fornecedores. Antes de empacotar ferramentas ou `node_modules`, revisar e cumprir as obrigações específicas de LGPL/GPL incorporada, código-fonte correspondente, avisos e bibliotecas incluídas. Ver [licenciamento Sharp](https://sharp.pixelplumbing.com/install/#licensing) e os arquivos de licença dos respectivos pacotes; este inventário não relicencia esses componentes.
 
+## Laboratório nativo de pareamento — MIT OR Apache-2.0
+
+Nota do laboratório nativo de pareamento: a feature opt-in `pairing-prototype` usa base64 0.23.1, getrandom 0.3.4 e sha2 0.10.9 (já presentes no lockfile transitivo), mais zeroize 1.8.2. Todas declaram `MIT OR Apache-2.0` nos metadados Cargo locais. São usadas somente pelo exemplo separado; o binário Tauri normal não importa esses módulos. Preserve textos e avisos dessas crates se redistribuir o executável de laboratório. Fontes: [base64](https://github.com/marshallpierce/rust-base64), [getrandom](https://github.com/rust-random/getrandom), [SHA-2](https://github.com/RustCrypto/hashes), [zeroize](https://github.com/RustCrypto/utils/tree/master/zeroize). Nenhum código de terceiros foi modificado ou relicenciado; a pendência de reunir os avisos nativos completos antes de redistribuição permanece.
+
 ## React, React DOM e Scheduler — MIT
 
 Fonte: os arquivos LICENSE dos pacotes react, react-dom e scheduler instalados. Os três têm o mesmo texto:

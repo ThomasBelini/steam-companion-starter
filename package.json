@@ -18,6 +18,8 @@
     "desktop:build": "tauri build --no-bundle -- --locked",
     "desktop:bundle": "tauri build --bundles nsis -- --locked",
     "desktop:info": "tauri info",
+    "desktop:pairing": "cargo run --manifest-path src-tauri/Cargo.toml --locked --features pairing-prototype --example pairing-lab -- --simulate",
+    "desktop:pairing:test": "cargo test --manifest-path src-tauri/Cargo.toml --locked --features pairing-prototype --example pairing-lab && cargo build --manifest-path src-tauri/Cargo.toml --locked --features pairing-prototype --example pairing-lab && node scripts/test-pairing-browser.mjs",
     "desktop:check": "cargo fmt --manifest-path src-tauri/Cargo.toml -- --check && cargo check --manifest-path src-tauri/Cargo.toml --locked && cargo test --manifest-path src-tauri/Cargo.toml --locked",
     "build": "tsc -b && vite build",
     "preview": "vite preview",

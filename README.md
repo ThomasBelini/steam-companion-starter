@@ -28,6 +28,8 @@ Um aplicativo Windows para acompanhar a biblioteca Steam, guiar conquistas rumo 
 
 Não há formulário de senha, Steam Guard ou API key.
 
+Há um [laboratório opt-in de pareamento desktop/navegador](docs/DESKTOP_PAIRING.md), executado separadamente com `npm.cmd run desktop:pairing`. Usa somente respostas simuladas e portas efêmeras de 127.0.0.1; não altera o aplicativo, não utiliza o Worker/D1 e não habilita autenticação Steam.
+
 A [Fase 1 do redesenho visual](docs/VISUAL_DESIGN.md) abrange navegação e biblioteca, usando as capturas Library Home/Library Gamepage do SpaceTheme como referência. Os jogos recentes têm ordem ilustrativa, sem histórico Steam; dois favoritos de exemplo são restaurados ao reiniciar. A [Fase 2](docs/GAME_DETAIL_DESIGN.md) aplica a mesma identidade à página individual. Guias e recomendações continuam indisponíveis; não é necessário instalar Millennium.
 
 A [Fase 3](docs/COMMERCE_DESIGN.md) aplica essa identidade somente a Promoções e Lista de desejos. Use o coração nas ofertas para adicionar/remover jogos; em desejos, “Comparar ofertas” volta às ofertas do jogo. Os cinco registros demonstrativos originais foram preservados, sem consulta às lojas nem compra. Os mínimos ilustrativos não são um histórico real, e a presença de uma oferta demo não comprova disponibilidade comercial.

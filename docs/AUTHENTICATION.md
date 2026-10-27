@@ -1,5 +1,7 @@
 # Arquitetura de autenticação Steam — proposta, ainda desativada
 
+Adendo de pareamento: o [laboratório desktop/navegador](DESKTOP_PAIRING.md) exercita S256 nativo, listener loopback efêmero, confirmação independente, cookie/CSRF e código simulado de uso único. É um executável de laboratório opt-in, sem IPC, OpenID, Worker, D1 ou sessões. Não resolve por si só o risco crítico de relay R01 nem autoriza login real; o fluxo completo abaixo continua proposto.
+
 Esta especificação prepara a implementação futura. **Nenhuma resposta OpenID é aceita pelas rotas HTTP, nenhum token é emitido e nenhum usuário se autentica no backend atual.** As rotas reservadas retornam 501/401, independentemente de cookies, headers ou linhas no banco. Não há opção de configuração que habilite um login simplificado.
 
 O [verificador OpenID isolado](OPENID_VERIFIER.md) valida formato, campos assinados, retorno, nonce, tupla de descoberta injetada e resposta check_authentication com transporte injetado. A [preparação OpenID/D1](OPENID_D1_PREPARATION.md) o compõe com contexto imutável da tentativa, consulta de replay e registro atômico de asserção/nonce. Não está ligada às rotas do Worker; nenhum resultado autoriza sessão. Descoberta real segura e integração do fluxo completo continuam pendentes; testes usam mocks, sem autenticação Steam real.
